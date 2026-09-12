@@ -11,6 +11,7 @@
       --bg-cream: #faf7f5;
       --dark: #2e282a;
       --border: #ddd2cc;
+      --accent: #d8a48f;
     }
 
     * {
@@ -29,38 +30,35 @@
       overflow: hidden;
     }
 
-    /* Header */
     header {
       background: #fff;
       border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
+      padding: 10px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     header h1 {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       color: var(--primary);
-      letter-spacing: 0.5px;
     }
 
-    /* Workspace layout */
     .workspace {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    /* Sidebar controls */
+    /* Left Control Sidebar */
     aside {
-      width: 320px;
+      width: 360px;
       background: #fff;
       border-right: 1px solid var(--border);
-      padding: 20px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       overflow-y: auto;
     }
 
@@ -72,32 +70,32 @@
 
     .panel-group label {
       font-size: 0.85rem;
-      font-weight: 600;
-      color: #555;
+      font-weight: 700;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    input[type="file"], input[type="number"], input[type="range"] {
+    input[type="text"], input[type="number"], input[type="file"], select {
       width: 100%;
-    }
-
-    input[type="number"] {
-      padding: 6px 10px;
+      padding: 7px 10px;
       border: 1px solid var(--border);
       border-radius: 4px;
+      font-size: 0.85rem;
     }
 
     .btn {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: background 0.2s;
     }
 
@@ -106,27 +104,86 @@
     }
 
     .btn-secondary {
-      background: #eef0f2;
+      background: #f0ece9;
       color: #333;
     }
     .btn-secondary:hover {
-      background: #dde1e5;
+      background: #e2ddd8;
     }
 
-    /* Main canvas stage */
+    /* Fabric Catalog Browser */
+    .catalog-scroll {
+      max-height: 170px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: #fdfdfd;
+    }
+
+    .catalog-item {
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      text-align: center;
+      background: #eee;
+    }
+
+    .catalog-item:hover {
+      border-color: var(--primary);
+    }
+
+    .catalog-item img {
+      width: 100%;
+      height: 52px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Active Project Palette */
+    .palette-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .palette-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f4efeb;
+      border: 1px solid var(--border);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .palette-chip img {
+      width: 22px;
+      height: 22px;
+      object-fit: cover;
+      border-radius: 3px;
+    }
+
+    /* Canvas Stage */
     main {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px;
       background: #ede8e4;
       position: relative;
     }
 
     .canvas-card {
       background: white;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       position: relative;
       display: inline-block;
     }
@@ -136,40 +193,50 @@
       display: block;
     }
 
-    /* Print Template view (hidden by default on screen) */
+    /* Piece Assignment Table */
+    .piece-table {
+      width: 100%;
+      font-size: 0.8rem;
+      border-collapse: collapse;
+      margin-top: 4px;
+    }
+
+    .piece-table th, .piece-table td {
+      border: 1px solid var(--border);
+      padding: 5px;
+      text-align: left;
+    }
+
+    /* PRINT RULES */
     #print-section {
       display: none;
     }
 
-    /* PRINT RULES FOR 1:1 SCALE */
     @media print {
       body * {
         visibility: hidden;
       }
-
       body {
         background: white;
         margin: 0;
         padding: 0;
       }
-
       #print-section, #print-section * {
         visibility: visible;
       }
-
       #print-section {
         display: block;
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
-        margin: 0.5in;
+        margin: 0.4in;
       }
-
-      .print-header {
-        margin-bottom: 20px;
+      .print-flex {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
       }
-
       .calibration-box {
         width: 1in;
         height: 1in;
@@ -178,13 +245,24 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: bold;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
-
-      .print-canvas {
-        border: 1px solid #999;
+      .legend-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 15px;
+        font-size: 11px;
+      }
+      .legend-table th, .legend-table td {
+        border: 1px solid #777;
+        padding: 6px;
+      }
+      .legend-table img {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
       }
     }
   </style>
@@ -200,18 +278,42 @@
 
   <div class="workspace">
     <aside>
+      <!-- Section 1: Joy in the Seam Fabric Catalog -->
       <div class="panel-group">
-        <label>1. Reference Photo (Optional)</label>
-        <input type="file" id="imageLoader" accept="image/*" />
+        <label>Joy in the Seam Yardage</label>
+        <input type="text" id="catalogSearch" placeholder="Filter fabrics (e.g. Starry, Speckled)..." oninput="filterCatalog()" />
+        <div class="catalog-scroll" id="catalogContainer">
+          <small style="color:#777; grid-column: span 4; padding: 10px;">Loading fabrics...</small>
+        </div>
       </div>
 
+      <!-- Section 2: Custom Upload & Active Palette -->
       <div class="panel-group">
-        <label>Image Opacity (<span id="opacityVal">40%</span>)</label>
+        <label>Or Upload Stash Fabric</label>
+        <input type="file" id="customSwatchInput" accept="image/*" />
+        
+        <label style="margin-top: 8px;">Active Project Palette</label>
+        <div class="palette-list" id="paletteChips">
+          <span style="font-size:0.75rem; color:#888;">Select fabrics above to add to your pattern palette.</span>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border);" />
+
+      <!-- Section 3: Reference Image Tracing -->
+      <div class="panel-group">
+        <label>Trace Background Image</label>
+        <input type="file" id="imageLoader" accept="image/*" />
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#666; margin-top:4px;">
+          <span>Trace Opacity</span>
+          <span id="opacityVal">40%</span>
+        </div>
         <input type="range" id="opacitySlider" min="0" max="100" value="40" />
       </div>
 
       <hr style="border: 0; border-top: 1px solid var(--border);" />
 
+      <!-- Section 4: Seam & Block Configuration -->
       <div class="panel-group">
         <label>Seam Allowance (Inches)</label>
         <input type="number" id="seamAllowance" value="0.25" step="0.125" min="0" max="1" />
@@ -219,53 +321,79 @@
 
       <div class="panel-group">
         <label>
-          <input type="checkbox" id="mirrorToggle" /> Mirror Template (Sewing side)
+          <input type="checkbox" id="mirrorToggle" /> Mirror Template (Sewing Side)
         </label>
-        <small style="color:#666;">FPP patterns are traditionally sewn on the reverse side.</small>
       </div>
-
-      <hr style="border: 0; border-top: 1px solid var(--border);" />
 
       <div class="panel-group">
-        <label>Drawing Tools</label>
-        <button class="btn btn-secondary" onclick="undoLastLine()">↩ Undo Last Seam</button>
-        <button class="btn btn-secondary" onclick="clearLines()">🗑️ Clear Seams</button>
+        <label>Piece Assignment</label>
+        <div id="pieceAssignmentsContainer" style="max-height: 120px; overflow-y:auto;">
+          <table class="piece-table" id="pieceTable">
+            <thead>
+              <tr>
+                <th>Piece</th>
+                <th>Assigned Fabric</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div style="margin-top: auto; font-size: 0.8rem; color: #777;">
-        <strong>Instructions:</strong><br>
-        1. Click two points on the canvas to draw straight seam lines.<br>
-        2. Divide the block into convex shapes.<br>
-        3. Print to test scale with your printer.
+      <div class="panel-group" style="display:flex; gap:6px; flex-direction:row;">
+        <button class="btn btn-secondary" style="flex:1" onclick="undoLastLine()">↩ Undo</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="clearLines()">🗑️ Clear</button>
       </div>
     </aside>
 
     <main>
       <div class="canvas-card">
-        <!-- 6in x 6in block at 96 DPI = 576px -->
+        <!-- 6" x 6" block at 96 DPI = 576px -->
         <canvas id="designCanvas" width="576" height="576"></canvas>
       </div>
     </main>
   </div>
 
-  <!-- Print Container -->
+  <!-- Hidden Print View (Prints 1:1 Scale) -->
   <div id="print-section">
-    <div class="print-header">
+    <div style="margin-bottom: 15px;">
       <h2>Joy in the Seam — Foundation Paper Piecing Template</h2>
       <p>Block Size: 6" x 6" | Seam Allowance: <span id="printSA">0.25</span>"</p>
     </div>
 
-    <div class="calibration-box">
-      1 INCH<br>TEST SQUARE<br>(Measure with ruler)
-    </div>
+    <div class="print-flex">
+      <div>
+        <div class="calibration-box">
+          1 INCH<br>TEST SQUARE<br>(Measure with ruler)
+        </div>
+        <img id="printImage" style="border: 1px solid #333;" alt="FPP Pattern" />
+      </div>
 
-    <img id="printImage" class="print-canvas" alt="Printable FPP Pattern" />
+      <div style="flex: 1;">
+        <h3>Fabric Swatch Legend & Cutting Key</h3>
+        <table class="legend-table" id="printLegendTable">
+          <thead>
+            <tr>
+              <th>Tag</th>
+              <th>Swatch</th>
+              <th>Fabric Name</th>
+              <th>Used in Pieces</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated on print -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
     const canvas = document.getElementById('designCanvas');
     const ctx = canvas.getContext('2d');
-    const DPI = 96; // Standard screen DPI (96px = 1 inch)
+    const DPI = 96;
 
     let refImage = null;
     let imageOpacity = 0.4;
@@ -273,34 +401,122 @@
     let startPoint = null;
     let isMirrored = false;
 
-    // Load reference photo
-    document.getElementById('imageLoader').addEventListener('change', function(e) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        refImage = new Image();
-        refImage.onload = render;
-        refImage.src = event.target.result;
-      };
-      if (e.target.files[0]) {
-        reader.readAsDataURL(e.target.files[0]);
+    // Fabric Store State
+    let storeFabrics = [];
+    let projectPalette = []; // [{ id: 'A', name: '...', imgUrl: '...', imgObj: Image }]
+    let pieceAssignments = {}; // { 'A1': 'A', 'A2': 'B' }
+
+    // 1. Fetch Yardage Collection from Joy In The Seam (Shopify JSON API)
+    async function fetchYardage() {
+      const directUrl = 'https://joyintheseam.com/collections/yardage-1/products.json?limit=50';
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+
+      try {
+        let res = await fetch(directUrl);
+        if (!res.ok) throw new Error('Direct fetch failed, trying proxy');
+        let data = await res.json();
+        renderCatalog(data.products);
+      } catch (err) {
+        try {
+          let res = await fetch(proxyUrl);
+          let data = await res.json();
+          renderCatalog(data.products);
+        } catch (proxyErr) {
+          document.getElementById('catalogContainer').innerHTML = 
+            '<small style="color:red; grid-column:span 4;">Could not load live store feed. You can still upload swatches manually below.</small>';
+        }
       }
+    }
+
+    function renderCatalog(products) {
+      storeFabrics = products.filter(p => p.images && p.images.length > 0);
+      populateCatalogUI(storeFabrics);
+    }
+
+    function populateCatalogUI(items) {
+      const container = document.getElementById('catalogContainer');
+      container.innerHTML = '';
+
+      items.forEach(prod => {
+        const item = document.createElement('div');
+        item.className = 'catalog-item';
+        item.title = prod.title;
+
+        const img = document.createElement('img');
+        img.src = prod.images[0].src;
+        img.loading = 'lazy';
+
+        item.appendChild(img);
+        item.onclick = () => addFabricToPalette(prod.title, prod.images[0].src);
+        container.appendChild(item);
+      });
+    }
+
+    function filterCatalog() {
+      const q = document.getElementById('catalogSearch').value.toLowerCase();
+      const filtered = storeFabrics.filter(p => p.title.toLowerCase().includes(q));
+      populateCatalogUI(filtered);
+    }
+
+    // 2. Manage Active Project Palette (Fabric A, B, C...)
+    function addFabricToPalette(name, imgUrl) {
+      if (projectPalette.some(f => f.imgUrl === imgUrl)) return; // prevent dupes
+      const tag = String.fromCharCode(65 + projectPalette.length); // A, B, C...
+
+      const imgObj = new Image();
+      imgObj.crossOrigin = 'Anonymous';
+      imgObj.src = imgUrl;
+
+      projectPalette.push({ tag, name, imgUrl, imgObj });
+      renderPaletteUI();
+      updatePieceTable();
+    }
+
+    document.getElementById('customSwatchInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        addFabricToPalette(file.name.replace(/\.[^/.]+$/, ""), ev.target.result);
+      };
+      reader.readAsDataURL(file);
     });
 
-    // Handle Opacity
-    document.getElementById('opacitySlider').addEventListener('input', function(e) {
+    function renderPaletteUI() {
+      const container = document.getElementById('paletteChips');
+      container.innerHTML = '';
+      projectPalette.forEach(f => {
+        const chip = document.createElement('div');
+        chip.className = 'palette-chip';
+        chip.innerHTML = `<img src="${f.imgUrl}" alt="${f.name}"/> <span>Fabric ${f.tag}</span>`;
+        container.appendChild(chip);
+      });
+    }
+
+    // 3. Trace Reference Image Handling
+    document.getElementById('imageLoader').addEventListener('change', (e) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        refImage = new Image();
+        refImage.onload = render;
+        refImage.src = ev.target.result;
+      };
+      if (e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+    });
+
+    document.getElementById('opacitySlider').addEventListener('input', (e) => {
       imageOpacity = e.target.value / 100;
       document.getElementById('opacityVal').innerText = e.target.value + '%';
       render();
     });
 
-    // Handle Mirror
-    document.getElementById('mirrorToggle').addEventListener('change', function(e) {
+    document.getElementById('mirrorToggle').addEventListener('change', (e) => {
       isMirrored = e.target.checked;
       render();
     });
 
-    // Line drawing interactions
-    canvas.addEventListener('click', function(e) {
+    // 4. Drawing Straight Seam Lines
+    canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -310,40 +526,77 @@
       } else {
         lines.push({ p1: startPoint, p2: { x, y } });
         startPoint = null;
+        updatePieceTable();
       }
       render();
     });
 
-    canvas.addEventListener('mousemove', function(e) {
+    canvas.addEventListener('mousemove', (e) => {
       if (!startPoint) return;
       render();
       const rect = canvas.getBoundingClientRect();
-      const currentX = e.clientX - rect.left;
-      const currentY = e.clientY - rect.top;
-
-      // Draw active preview line
       ctx.beginPath();
       ctx.setLineDash([4, 4]);
       ctx.strokeStyle = '#e74c3c';
       ctx.lineWidth = 1.5;
       ctx.moveTo(startPoint.x, startPoint.y);
-      ctx.lineTo(currentX, currentY);
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
       ctx.stroke();
       ctx.setLineDash([]);
     });
 
     function undoLastLine() {
       lines.pop();
+      updatePieceTable();
       render();
     }
 
     function clearLines() {
       if (confirm('Clear all seam lines?')) {
         lines = [];
+        pieceAssignments = {};
+        updatePieceTable();
         render();
       }
     }
 
+    // 5. Piece Table Mapping (A1, A2 -> Fabric Tag)
+    function updatePieceTable() {
+      const tbody = document.querySelector('#pieceTable tbody');
+      tbody.innerHTML = '';
+
+      lines.forEach((_, idx) => {
+        const pieceTag = `A${idx + 1}`;
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.innerText = pieceTag;
+
+        const tdSelect = document.createElement('td');
+        const sel = document.createElement('select');
+        sel.innerHTML = '<option value="">None (White)</option>';
+
+        projectPalette.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.tag;
+          opt.innerText = `Fabric ${f.tag} (${f.name.substring(0, 18)}...)`;
+          if (pieceAssignments[pieceTag] === f.tag) opt.selected = true;
+          sel.appendChild(opt);
+        });
+
+        sel.onchange = (e) => {
+          pieceAssignments[pieceTag] = e.target.value;
+          render();
+        };
+
+        tdSelect.appendChild(sel);
+        tr.appendChild(tdName);
+        tr.appendChild(tdSelect);
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 6. Canvas Render Cycle
     function render() {
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -353,19 +606,19 @@
         ctx.scale(-1, 1);
       }
 
-      // 1. Draw Reference Image (if present)
+      // Trace photo background
       if (refImage) {
         ctx.globalAlpha = imageOpacity;
         ctx.drawImage(refImage, 0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1.0;
       }
 
-      // 2. Draw Outer Border (Solid Sewing Line)
+      // Block boundary
       ctx.strokeStyle = '#2e282a';
       ctx.lineWidth = 2;
       ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-      // 3. Draw Seam Lines
+      // Seam Lines & Piece Labels
       lines.forEach((line, index) => {
         ctx.beginPath();
         ctx.strokeStyle = '#2e282a';
@@ -374,15 +627,17 @@
         ctx.lineTo(line.p2.x, line.p2.y);
         ctx.stroke();
 
-        // Piece Sequence Number at line center
         const midX = (line.p1.x + line.p2.x) / 2;
         const midY = (line.p1.y + line.p2.y) / 2;
+
+        const pieceTag = `A${index + 1}`;
+        const fabricTag = pieceAssignments[pieceTag] ? ` [${pieceAssignments[pieceTag]}]` : '';
+
         ctx.fillStyle = '#9b6b78';
         ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`A${index + 1}`, midX + 4, midY - 4);
+        ctx.fillText(`${pieceTag}${fabricTag}`, midX + 4, midY - 4);
       });
 
-      // 4. Highlight starting click if in progress
       if (startPoint) {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
@@ -393,19 +648,37 @@
       ctx.restore();
     }
 
+    // 7. Print Handler with Swatch Legend
     function triggerPrint() {
       const sa = document.getElementById('seamAllowance').value;
       document.getElementById('printSA').innerText = sa;
 
-      // Export canvas to high-res print target
       const printImg = document.getElementById('printImage');
       printImg.src = canvas.toDataURL('image/png');
       printImg.style.width = (canvas.width / DPI) + 'in';
       printImg.style.height = (canvas.height / DPI) + 'in';
 
+      // Build Print Swatch Legend
+      const tbody = document.querySelector('#printLegendTable tbody');
+      tbody.innerHTML = '';
+
+      projectPalette.forEach(f => {
+        const usedPieces = Object.keys(pieceAssignments).filter(k => pieceAssignments[k] === f.tag);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>Fabric ${f.tag}</strong></td>
+          <td><img src="${f.imgUrl}" alt="${f.name}"/></td>
+          <td>${f.name}</td>
+          <td>${usedPieces.length > 0 ? usedPieces.join(', ') : 'Unassigned'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
       window.print();
     }
 
+    // Start App & Fetch Store Collection
+    fetchYardage();
     render();
   </script>
 </body>
