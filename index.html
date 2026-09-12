@@ -45,11 +45,11 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       overflow-y: auto;
     }
 
-    .panel-group { display: flex; flex-direction: column; gap: 6px; }
+    .panel-group { display: flex; flex-direction: column; gap: 5px; }
     .panel-group label { font-size: 0.75rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
 
     input, select {
@@ -78,8 +78,43 @@
     .btn-secondary { background: #eee9e5; color: #333; }
     .btn-secondary:hover { background: #e0d8d2; }
 
+    /* Workflow Mode Selector */
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .mode-tab {
+      padding: 8px 4px;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+    .mode-tab.active { border-color: var(--primary); background: #fbf5f6; color: var(--primary); }
+
+    .section-selector {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .sec-badge {
+      padding: 4px 10px;
+      border-radius: 14px;
+      background: #eee;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .sec-badge.active { background: var(--primary); color: white; }
+
+    /* Yardage scroll */
     .catalog-scroll {
-      max-height: 110px;
+      max-height: 90px;
       overflow-y: auto;
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -89,7 +124,7 @@
       gap: 4px;
       background: #fafafa;
     }
-    .catalog-item { cursor: pointer; border: 2px solid transparent; border-radius: 3px; overflow: hidden; height: 44px; }
+    .catalog-item { cursor: pointer; border: 2px solid transparent; border-radius: 3px; overflow: hidden; height: 38px; }
     .catalog-item img { width: 100%; height: 100%; object-fit: cover; }
     .catalog-item.selected { border-color: var(--primary); }
 
@@ -178,14 +213,31 @@
 
   <div class="workspace">
     <aside>
+      <!-- Step 1 vs Step 2 Modes -->
       <div class="panel-group">
-        <label>Joy in the Seam Fabric Swatches</label>
+        <label>Workflow Step</label>
+        <div class="mode-tabs">
+          <div class="mode-tab active" id="tabSections" onclick="setMode('sections')">1. Cut Sections (A, B...)</div>
+          <div class="mode-tab" id="tabPieces" onclick="setMode('pieces')">2. Cut Pieces (A1, A2...)</div>
+        </div>
+      </div>
+
+      <!-- Active Section Picker (Only in Step 2) -->
+      <div class="panel-group" id="sectionSelectGroup" style="display:none;">
+        <label>Select Active Section</label>
+        <div class="section-selector" id="sectionBadges"></div>
+      </div>
+
+      <!-- Yardage Swatches -->
+      <div class="panel-group">
+        <label>Fabric Yardage Swatches</label>
         <div class="catalog-scroll" id="catalogContainer">
           <small style="color:#777; grid-column:span 4; padding:6px;">Loading yardage...</small>
         </div>
         <input type="file" id="customFabricInput" accept="image/*" style="font-size:0.75rem; margin-top:4px;" />
       </div>
 
+      <!-- Reference Tracing -->
       <div class="panel-group">
         <label>Trace Reference Image</label>
         <input type="file" id="traceInput" accept="image/*" />
@@ -203,7 +255,7 @@
         <div style="display:flex; gap:8px; margin-top:4px;">
           <input type="number" id="blockDim" value="6" step="0.5" title="Block Dimension (Square)" />
           <span style="align-self:center; font-size:0.8rem;">in</span>
-          <input type="number" id="seamAllowance" value="0.25" step="0.125" title="Seam Allowance (Inches)" />
+          <input type="number" id="seamAllowance" value="0.25" step="0.125" title="Seam Allowance" />
           <span style="align-self:center; font-size:0.8rem;">SA</span>
         </div>
       </div>
@@ -216,14 +268,14 @@
       </div>
 
       <div class="panel-group" style="display:flex; gap:6px; flex-direction:row;">
-        <button class="btn btn-secondary" style="flex:1" onclick="undoCut()">↩ Undo Cut</button>
-        <button class="btn btn-secondary" style="flex:1" onclick="resetBlock()">🗑️ Reset</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="undoCut()">↩ Undo</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="resetAll()">🗑️ Reset</button>
       </div>
 
       <div style="margin-top:auto; font-size:0.75rem; color:#666; line-height:1.4;">
-        <strong>How to draw seams:</strong><br>
-        • Move near an edge until the <strong>blue circle</strong> snaps.<br>
-        • Click once to start the cut, move across the piece, and click the opposite edge to slice.
+        <strong>Instructions:</strong><br>
+        1. In <strong>Step 1</strong>, slice the whole block into Sections (A, B, C...).<br>
+        2. In <strong>Step 2</strong>, select a section and subdivide it into pieces (A1, A2...).
       </div>
     </aside>
 
@@ -235,7 +287,7 @@
     </main>
   </div>
 
-  <!-- MULTI-PAGE PRINT TARGET -->
+  <!-- MULTI-PAGE PRINT TARGET (QuiltAssistant Simba Format) -->
   <div id="print-container">
     <!-- Page 1: Overview and Swatch Key -->
     <div class="print-page" id="page-overview">
@@ -244,7 +296,7 @@
         <h1 id="p1Title">My FPP Quilt Block</h1>
         <p><strong>Joy in the Seam</strong> | Designed for Foundation Paper Piecing</p>
         <p>Finished Dimensions: <span id="p1Size">6" × 6"</span> | Seam Allowance: <span id="p1SA">0.25"</span></p>
-        <p><strong>Calculated Sewing Order:</strong> <span id="p1Order">A1</span></p>
+        <p><strong>Assembly Sewing Order:</strong> <span id="p1Order">A = 1</span></p>
       </div>
 
       <div style="text-align: center; margin: 10px 0;">
@@ -268,17 +320,8 @@
       </div>
     </div>
 
-    <!-- Page 2: Section A Print Template -->
-    <div class="print-page" id="page-section">
-      <div class="print-header">
-        <div class="calibration-box">1 INCH<br>CALIBRATION<br>SQUARE</div>
-        <h2 id="p2Title">My FPP Quilt Block — Section A</h2>
-        <p>Solid Line = <strong>Sewing Line</strong> | Dashed Line = <strong>Cutting Line (<span id="p2SA">0.25</span>" Seam Allowance)</strong></p>
-        <p style="font-size:11px;">Assembly Order: <strong id="p2Order">A1</strong></p>
-        <p style="font-size:10px; color:#555;">Note: Mirrored for paper-side foundation sewing.</p>
-      </div>
-      <div class="section-svg-container" id="svgHolder"></div>
-    </div>
+    <!-- Container where individual Section Pages (A, B, C...) get injected -->
+    <div id="sectionPagesContainer"></div>
   </div>
 
   <script>
@@ -286,35 +329,56 @@
     const canvas = document.getElementById('designCanvas');
     const ctx = canvas.getContext('2d');
 
+    let currentMode = 'sections'; // 'sections' or 'pieces'
     let traceImg = null;
     let traceOpacity = 0.4;
     let cutStartPoint = null;
     let snapIndicator = null;
 
-    let rootNode = null;
+    /*
+      Data Model:
+      sections = [
+        {
+          id: 'A',
+          polygon: [{x,y}...],
+          tree: { id: 'A1', polygon: [...], left: null, right: null, fabric: null }
+        }
+      ]
+    */
+    let sections = [];
+    let activeSectionId = 'A';
     let historyStack = [];
     let projectPalette = [];
 
-    // 1. Initialize Blank Block
     function initBlock() {
-      rootNode = {
-        id: 'A1',
+      sections = [{
+        id: 'A',
         polygon: [
           { x: 0, y: 0 },
           { x: canvas.width, y: 0 },
           { x: canvas.width, y: canvas.height },
           { x: 0, y: canvas.height }
         ],
-        left: null,
-        right: null,
-        fabric: null
-      };
+        tree: {
+          id: 'A1',
+          polygon: [
+            { x: 0, y: 0 },
+            { x: canvas.width, y: 0 },
+            { x: canvas.width, y: canvas.height },
+            { x: 0, y: canvas.height }
+          ],
+          left: null,
+          right: null,
+          fabric: null
+        }
+      }];
+      activeSectionId = 'A';
       historyStack = [];
-      renumberLeaves();
+      updateUI();
       render();
     }
 
-    // 2. Fetch Live Fabric Yardage
+    // 1. Fetch Store Yardage
     async function loadYardage() {
       const url = 'https://joyintheseam.com/collections/yardage-1/products.json?limit=30';
       const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
@@ -379,20 +443,21 @@
       reader.readAsDataURL(file);
     });
 
-    // 3. Tree Traversal & Sequencing
-    function getLeaves(node = rootNode) {
+    // 2. Tree Helpers
+    function getLeaves(node) {
       if (!node) return [];
       if (!node.left && !node.right) return [node];
       return [...getLeaves(node.left), ...getLeaves(node.right)];
     }
 
-    function renumberLeaves() {
-      const leaves = getLeaves();
-      leaves.forEach((l, idx) => {
-        l.id = `A${idx + 1}`;
+    function renumberAll() {
+      sections.forEach(sec => {
+        const leaves = getLeaves(sec.tree);
+        leaves.forEach((l, idx) => {
+          l.id = `${sec.id}${idx + 1}`;
+        });
       });
-      const seq = buildSewingSequenceString(rootNode);
-      document.getElementById('sewingSequenceDisplay').innerText = `${seq} = A`;
+      updateUI();
     }
 
     function buildSewingSequenceString(node) {
@@ -401,7 +466,36 @@
       return `(${buildSewingSequenceString(node.left)} > ${buildSewingSequenceString(node.right)})`;
     }
 
-    // 4. Geometry & Magnetic Snapping
+    function updateUI() {
+      const badgeContainer = document.getElementById('sectionBadges');
+      badgeContainer.innerHTML = '';
+      sections.forEach(s => {
+        const b = document.createElement('div');
+        b.className = `sec-badge ${s.id === activeSectionId ? 'active' : ''}`;
+        b.innerText = `Section ${s.id}`;
+        b.onclick = () => {
+          activeSectionId = s.id;
+          updateUI();
+          render();
+        };
+        badgeContainer.appendChild(b);
+      });
+
+      const activeSec = sections.find(s => s.id === activeSectionId);
+      const pieceSeq = activeSec ? buildSewingSequenceString(activeSec.tree) : 'A1';
+      const masterSeq = sections.map(s => s.id).join(' > ');
+      document.getElementById('sewingSequenceDisplay').innerText = `Section ${activeSectionId}: ${pieceSeq}\nMaster: (${masterSeq}) = 1`;
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('tabSections').classList.toggle('active', mode === 'sections');
+      document.getElementById('tabPieces').classList.toggle('active', mode === 'pieces');
+      document.getElementById('sectionSelectGroup').style.display = (mode === 'pieces') ? 'block' : 'none';
+      render();
+    }
+
+    // 3. Geometry & Magnetic Snapping
     function getMousePos(e) {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -415,22 +509,27 @@
     function findSnapPoint(pt, radius = 16) {
       let closestPt = null;
       let minDistance = radius;
-      const leaves = getLeaves();
 
-      leaves.forEach(leaf => {
-        const poly = leaf.polygon;
+      // Determine active polygons to snap against
+      let candidatePolys = [];
+      if (currentMode === 'sections') {
+        candidatePolys = sections.map(s => s.polygon);
+      } else {
+        const sec = sections.find(s => s.id === activeSectionId);
+        if (sec) candidatePolys = getLeaves(sec.tree).map(l => l.polygon);
+      }
+
+      candidatePolys.forEach(poly => {
         for (let i = 0; i < poly.length; i++) {
           const a = poly[i];
           const b = poly[(i + 1) % poly.length];
 
-          // Check vertex distance
           const dV = Math.hypot(pt.x - a.x, pt.y - a.y);
           if (dV < minDistance) {
             minDistance = dV;
             closestPt = { x: a.x, y: a.y };
           }
 
-          // Check edge projection
           const dx = b.x - a.x;
           const dy = b.y - a.y;
           const lenSq = dx * dx + dy * dy;
@@ -452,66 +551,43 @@
       return closestPt || pt;
     }
 
-    // 5. Robust Single-Polygon Slicing
-    function lineIntersection(p1, p2, p3, p4) {
+    function lineIntersection(p1, p2, a, b) {
       const d = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
-      if (Math.abs(d) < 1e-6) return null;
-      const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / d;
-      const u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / d;
-      if (t >= -1e-4 && t <= 1 + 1e-4 && u >= -1e-4 && u <= 1 + 1e-4) {
-        return {
-          x: p1.x + t * (p2.x - p1.x),
-          y: p1.y + t * (p2.y - p1.y),
-          t: t
-        };
-      }
-      return null;
     }
 
     function sliceSinglePolygon(poly, p1, p2) {
-      // Find intersections of segment (p1, p2) with the polygon's perimeter
       const hits = [];
-
       for (let i = 0; i < poly.length; i++) {
         const a = poly[i];
         const b = poly[(i + 1) % poly.length];
-        const hit = lineIntersection(p1, p2, a, b);
 
-        if (hit) {
-          // Check for duplicate intersection points
-          if (!hits.some(h => Math.hypot(h.x - hit.x, h.y - hit.y) < 1.0)) {
-            hits.push({ ...hit, edgeIndex: i });
+        const d = (p1.x - p2.x) * (b.y - a.y) - (p1.y - p2.y) * (b.x - a.x);
+        if (Math.abs(d) < 1e-6) continue;
+        const t = ((p1.x - a.x) * (b.y - a.y) - (p1.y - a.y) * (b.x - a.x)) / d;
+        const u = -((p1.x - p2.x) * (p1.y - a.y) - (p1.y - p2.y) * (p1.x - a.x)) / d;
+
+        if (t >= -1e-4 && t <= 1 + 1e-4 && u >= -1e-4 && u <= 1 + 1e-4) {
+          const hitPt = { x: a.x + u * (b.x - a.x), y: a.y + u * (b.y - a.y) };
+          if (!hits.some(h => Math.hypot(h.x - hitPt.x, h.y - hitPt.y) < 1.0)) {
+            hits.push({ ...hitPt, edgeIndex: i });
           }
         }
       }
 
       if (hits.length !== 2) return null;
-
-      // Sort by edge index
       hits.sort((a, b) => a.edgeIndex - b.edgeIndex);
 
       const [h1, h2] = hits;
       const poly1 = [ { x: h1.x, y: h1.y } ];
-      for (let i = h1.edgeIndex + 1; i <= h2.edgeIndex; i++) {
-        poly1.push({ ...poly[i] });
-      }
+      for (let i = h1.edgeIndex + 1; i <= h2.edgeIndex; i++) poly1.push({ ...poly[i] });
       poly1.push({ x: h2.x, y: h2.y });
 
       const poly2 = [ { x: h2.x, y: h2.y } ];
-      for (let i = h2.edgeIndex + 1; i < poly.length; i++) {
-        poly2.push({ ...poly[i] });
-      }
-      for (let i = 0; i <= h1.edgeIndex; i++) {
-        poly2.push({ ...poly[i] });
-      }
+      for (let i = h2.edgeIndex + 1; i < poly.length; i++) poly2.push({ ...poly[i] });
+      for (let i = 0; i <= h1.edgeIndex; i++) poly2.push({ ...poly[i] });
       poly2.push({ x: h1.x, y: h1.y });
 
-      const a1 = getPolygonArea(poly1);
-      const a2 = getPolygonArea(poly2);
-
-      if (a1 > 30 && a2 > 30) {
-        return [poly1, poly2];
-      }
+      if (getArea(poly1) > 30 && getArea(poly2) > 30) return [poly1, poly2];
       return null;
     }
 
@@ -526,7 +602,7 @@
       return inside;
     }
 
-    function getPolygonArea(pts) {
+    function getArea(pts) {
       let area = 0;
       for (let i = 0; i < pts.length; i++) {
         const j = (i + 1) % pts.length;
@@ -549,51 +625,113 @@
       return { x: cx / (6 * area), y: cy / (6 * area) };
     }
 
-    function attemptSlice(p1, p2) {
-      // Find the specific piece the user cut across (using midpoint)
-      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
-      const leaves = getLeaves();
-      let targetLeaf = leaves.find(l => pointInPoly(mid, l.polygon));
+    function offsetPolygon(poly, offsetPx) {
+      let area = 0;
+      for (let i = 0; i < poly.length; i++) {
+        const j = (i + 1) % poly.length;
+        area += (poly[i].x * poly[j].y - poly[j].x * poly[i].y);
+      }
+      const pts = (area < 0) ? [...poly].reverse() : [...poly];
 
-      // Fallback: check if line intersects any leaf
-      if (!targetLeaf) {
-        targetLeaf = leaves.find(l => sliceSinglePolygon(l.polygon, p1, p2) !== null);
+      const lines = [];
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i];
+        const b = pts[(i + 1) % pts.length];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy);
+        if (len < 1e-4) continue;
+        const nx = dy / len;
+        const ny = -dx / len;
+        lines.push({
+          p1: { x: a.x + nx * offsetPx, y: a.y + ny * offsetPx },
+          p2: { x: b.x + nx * offsetPx, y: b.y + ny * offsetPx },
+          dx, dy
+        });
       }
 
-      if (!targetLeaf) return;
+      const offsetPts = [];
+      for (let i = 0; i < lines.length; i++) {
+        const l1 = lines[i];
+        const l2 = lines[(i + 1) % lines.length];
+        const denom = l1.dx * l2.dy - l1.dy * l2.dx;
+        if (Math.abs(denom) < 1e-5) {
+          offsetPts.push(l1.p2);
+          continue;
+        }
+        const t = ((l2.p1.x - l1.p1.x) * l2.dy - (l2.p1.y - l1.p1.y) * l2.dx) / denom;
+        offsetPts.push({ x: l1.p1.x + t * l1.dx, y: l1.p1.y + t * l1.dy });
+      }
+      return offsetPts;
+    }
 
-      const split = sliceSinglePolygon(targetLeaf.polygon, p1, p2);
-      if (split) {
-        // Push state for Undo
-        historyStack.push(JSON.stringify(rootNode));
+    // 4. Execution & Cutting
+    function attemptSlice(p1, p2) {
+      historyStack.push(JSON.stringify(sections));
+      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
 
-        targetLeaf.left = { id: '', polygon: split[0], left: null, right: null, fabric: targetLeaf.fabric };
-        targetLeaf.right = { id: '', polygon: split[1], left: null, right: null, fabric: targetLeaf.fabric };
+      if (currentMode === 'sections') {
+        // Find target section
+        let targetSec = sections.find(s => pointInPoly(mid, s.polygon));
+        if (!targetSec) targetSec = sections.find(s => sliceSinglePolygon(s.polygon, p1, p2) !== null);
 
-        renumberLeaves();
-        render();
+        if (targetSec) {
+          const split = sliceSinglePolygon(targetSec.polygon, p1, p2);
+          if (split) {
+            const nextLetter = String.fromCharCode(65 + sections.length);
+            targetSec.polygon = split[0];
+            targetSec.tree = { id: `${targetSec.id}1`, polygon: split[0], left: null, right: null, fabric: null };
+
+            sections.push({
+              id: nextLetter,
+              polygon: split[1],
+              tree: { id: `${nextLetter}1`, polygon: split[1], left: null, right: null, fabric: null }
+            });
+
+            activeSectionId = nextLetter;
+            renumberAll();
+            render();
+          }
+        }
+      } else {
+        // Cut piece within active section
+        const sec = sections.find(s => s.id === activeSectionId);
+        if (!sec) return;
+
+        const leaves = getLeaves(sec.tree);
+        let targetLeaf = leaves.find(l => pointInPoly(mid, l.polygon));
+        if (!targetLeaf) targetLeaf = leaves.find(l => sliceSinglePolygon(l.polygon, p1, p2) !== null);
+
+        if (targetLeaf) {
+          const split = sliceSinglePolygon(targetLeaf.polygon, p1, p2);
+          if (split) {
+            targetLeaf.left = { id: '', polygon: split[0], left: null, right: null, fabric: targetLeaf.fabric };
+            targetLeaf.right = { id: '', polygon: split[1], left: null, right: null, fabric: targetLeaf.fabric };
+            renumberAll();
+            render();
+          }
+        }
       }
     }
 
     function undoCut() {
       if (historyStack.length > 0) {
-        rootNode = JSON.parse(historyStack.pop());
-        renumberLeaves();
+        sections = JSON.parse(historyStack.pop());
+        renumberAll();
         render();
       }
     }
 
-    function resetBlock() {
+    function resetAll() {
       if (confirm('Reset entire block back to a blank canvas?')) initBlock();
     }
 
-    // 6. Interactive Canvas Listeners
+    // 5. Canvas Interactions
     canvas.addEventListener('mousemove', (e) => {
       const raw = getMousePos(e);
       snapIndicator = findSnapPoint(raw);
       render();
 
-      // Draw rubber-band cut line
       if (cutStartPoint) {
         ctx.beginPath();
         ctx.setLineDash([5, 5]);
@@ -608,11 +746,10 @@
 
     canvas.addEventListener('click', (e) => {
       const pt = snapIndicator || getMousePos(e);
-
       if (!cutStartPoint) {
         cutStartPoint = pt;
       } else {
-        if (Math.hypot(cutStartPoint.x - pt.x, cutStartPoint.y - pt.y) > 10) {
+        if (Math.hypot(cutStartPoint.x - pt.x, cutStartPoint.y - pt.y) > 8) {
           attemptSlice(cutStartPoint, pt);
         }
         cutStartPoint = null;
@@ -620,7 +757,6 @@
       render();
     });
 
-    // Reference Image Tracing
     document.getElementById('traceInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -639,47 +775,55 @@
       render();
     });
 
-    // 7. Render Function
+    // 6. Canvas Render
     function render(hideCursor = false) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Background Reference Photo
       if (traceImg) {
         ctx.globalAlpha = traceOpacity;
         ctx.drawImage(traceImg, 0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1.0;
       }
 
-      // Outer block boundary
       ctx.strokeStyle = '#231f20';
       ctx.lineWidth = 2;
       ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-      // Pieces and Seam Lines
-      const leaves = getLeaves();
-      leaves.forEach(leaf => {
+      sections.forEach(sec => {
+        const isSecActive = (sec.id === activeSectionId);
+        const leaves = getLeaves(sec.tree);
+
+        leaves.forEach(leaf => {
+          ctx.beginPath();
+          ctx.moveTo(leaf.polygon[0].x, leaf.polygon[0].y);
+          for (let i = 1; i < leaf.polygon.length; i++) ctx.lineTo(leaf.polygon[i].x, leaf.polygon[i].y);
+          ctx.closePath();
+
+          ctx.fillStyle = isSecActive ? 'rgba(255,255,255,0.7)' : 'rgba(235,235,235,0.4)';
+          ctx.fill();
+
+          ctx.strokeStyle = '#231f20';
+          ctx.lineWidth = isSecActive ? 1.5 : 1.0;
+          ctx.stroke();
+
+          const c = getCentroid(leaf.polygon);
+          ctx.fillStyle = '#231f20';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(leaf.id, c.x, c.y);
+        });
+
+        // Bold outline for Section boundaries
         ctx.beginPath();
-        ctx.moveTo(leaf.polygon[0].x, leaf.polygon[0].y);
-        for (let i = 1; i < leaf.polygon.length; i++) ctx.lineTo(leaf.polygon[i].x, leaf.polygon[i].y);
+        ctx.moveTo(sec.polygon[0].x, sec.polygon[0].y);
+        for (let i = 1; i < sec.polygon.length; i++) ctx.lineTo(sec.polygon[i].x, sec.polygon[i].y);
         ctx.closePath();
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fill();
-
-        ctx.strokeStyle = '#231f20';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = (currentMode === 'sections' && isSecActive) ? '#9b6b78' : '#333';
+        ctx.lineWidth = (currentMode === 'sections' && isSecActive) ? 3 : 2;
         ctx.stroke();
-
-        // Label Centered
-        const c = getCentroid(leaf.polygon);
-        ctx.fillStyle = '#231f20';
-        ctx.font = 'bold 13px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(leaf.id, c.x, c.y);
       });
 
-      // Snapping indicator and cut start dot
       if (!hideCursor) {
         if (snapIndicator) {
           ctx.strokeStyle = '#2980b9';
@@ -698,72 +842,87 @@
       }
     }
 
-    // 8. Vector Print Engine (QuiltAssistant Style)
+    // 7. Multi-Page Vector Print Generator
     function generateAndPrint() {
       const sa = parseFloat(document.getElementById('seamAllowance').value) || 0.25;
       const saPx = sa * DPI;
       const title = document.getElementById('patternTitle').value;
       const dim = document.getElementById('blockDim').value;
-      const seq = buildSewingSequenceString(rootNode);
 
-      // Clean canvas before capture
-      render(true);
+      render(true); // clean preview without red dots
 
-      // Page 1 Setup (Overview)
+      // Page 1 Setup (Master Cover Sheet)
       document.getElementById('p1Title').innerText = title;
       document.getElementById('p1Size').innerText = `${dim}" × ${dim}"`;
       document.getElementById('p1SA').innerText = `${sa}"`;
-      document.getElementById('p1Order').innerText = `${seq} = A`;
+      document.getElementById('p1Order').innerText = `(${sections.map(s => s.id).join(' > ')}) = 1`;
       document.getElementById('p1OverviewImg').src = canvas.toDataURL('image/png');
 
-      // Swatch Legend
       const legBody = document.querySelector('#p1Legend tbody');
       legBody.innerHTML = '';
       if (projectPalette.length === 0) {
         legBody.innerHTML = '<tr><td colspan="4" style="color:#777;">No custom fabrics assigned.</td></tr>';
       } else {
         projectPalette.forEach(f => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td><strong>[${f.tag}]</strong></td>
-            <td><img src="${f.imgObj.src}" alt="${f.name}"/></td>
-            <td>${f.name}</td>
-            <td>As Labeled</td>
-          `;
-          legBody.appendChild(row);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td><strong>[${f.tag}]</strong></td><td><img src="${f.imgObj.src}" alt="${f.name}"/></td><td>${f.name}</td><td>As Labeled</td>`;
+          legBody.appendChild(tr);
         });
       }
 
-      // Page 2 Setup (Section Template)
-      document.getElementById('p2Title').innerText = `${title} — Section A`;
-      document.getElementById('p2SA').innerText = sa;
-      document.getElementById('p2Order').innerText = seq;
+      // Pages 2+: One page per Section (Vector SVG)
+      const container = document.getElementById('sectionPagesContainer');
+      container.innerHTML = '';
 
-      const totalW = canvas.width + (saPx * 2);
-      const totalH = canvas.height + (saPx * 2);
-      const leaves = getLeaves();
+      sections.forEach((sec, idx) => {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'print-page';
 
-      // Build Mirrored Vector SVG
-      let svg = `<svg width="${(totalW/DPI).toFixed(2)}in" height="${(totalH/DPI).toFixed(2)}in" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">`;
-      svg += `<g transform="translate(${totalW - saPx}, ${saPx}) scale(-1, 1)">`;
+        const seq = buildSewingSequenceString(sec.tree);
+        pageDiv.innerHTML = `
+          <div class="print-header">
+            <div class="calibration-box">1 INCH<br>CALIBRATION<br>SQUARE</div>
+            <h2>${title} — Section ${sec.id}</h2>
+            <p>Solid Line = <strong>Sewing Line</strong> | Dashed Line = <strong>Cutting Line (${sa}" Seam Allowance)</strong></p>
+            <p style="font-size:11px;">Assembly Order: <strong>${seq}</strong></p>
+            <p style="font-size:10px; color:#555;">Mirrored for paper-side foundation piecing.</p>
+          </div>
+          <div class="section-svg-container" id="svgHolder_${sec.id}"></div>
+        `;
 
-      // Dashed Cutting Line (1/4" Seam Allowance)
-      svg += `<rect x="${-saPx}" y="${-saPx}" width="${canvas.width + saPx * 2}" height="${canvas.height + saPx * 2}" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+        const totalW = canvas.width + (saPx * 2);
+        const totalH = canvas.height + (saPx * 2);
+        const leaves = getLeaves(sec.tree);
 
-      // Solid Outer Block Line
-      svg += `<rect x="0" y="0" width="${canvas.width}" height="${canvas.height}" fill="none" stroke="#000" stroke-width="2"/>`;
+        // Build mirrored vector SVG
+        let svg = `<svg width="${(totalW/DPI).toFixed(2)}in" height="${(totalH/DPI).toFixed(2)}in" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">`;
+        svg += `<g transform="translate(${totalW - saPx}, ${saPx}) scale(-1, 1)">`;
 
-      // Interior Seams and Labels
-      leaves.forEach(leaf => {
-        const pts = leaf.polygon.map(p => `${p.x},${p.y}`).join(' ');
-        svg += `<polygon points="${pts}" fill="none" stroke="#000" stroke-width="1.5"/>`;
+        // Outer Dashed Seam Allowance
+        const offsetPoly = offsetPolygon(sec.polygon, saPx);
+        const offsetPts = offsetPoly.map(p => `${p.x},${p.y}`).join(' ');
+        svg += `<polygon points="${offsetPts}" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6,4"/>`;
 
-        const c = getCentroid(leaf.polygon);
-        svg += `<text x="${c.x}" y="${c.y}" transform="translate(${c.x * 2}, 0) scale(-1, 1)" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000" text-anchor="middle" dominant-baseline="central">${leaf.id}</text>`;
+        // Solid Boundary of Section
+        const secPts = sec.polygon.map(p => `${p.x},${p.y}`).join(' ');
+        svg += `<polygon points="${secPts}" fill="none" stroke="#000" stroke-width="2"/>`;
+
+        // Interior Seams & Labels
+        leaves.forEach(leaf => {
+          const pts = leaf.polygon.map(p => `${p.x},${p.y}`).join(' ');
+          svg += `<polygon points="${pts}" fill="none" stroke="#000" stroke-width="1.5"/>`;
+
+          const c = getCentroid(leaf.polygon);
+          svg += `<text x="${c.x}" y="${c.y}" transform="translate(${c.x * 2}, 0) scale(-1, 1)" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000" text-anchor="middle" dominant-baseline="central">${leaf.id}</text>`;
+        });
+
+        // Glue Edge Indicator
+        svg += `<text x="${sec.polygon[0].x}" y="${sec.polygon[0].y - 6}" font-family="sans-serif" font-size="11" font-weight="bold" fill="#000">Glue Edge #${idx + 1} (Section ${sec.id})</text>`;
+
+        svg += `</g></svg>`;
+        pageDiv.querySelector(`#svgHolder_${sec.id}`).innerHTML = svg;
+        container.appendChild(pageDiv);
       });
-
-      svg += `</g></svg>`;
-      document.getElementById('svgHolder').innerHTML = svg;
 
       window.print();
       render();
