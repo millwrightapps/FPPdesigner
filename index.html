@@ -26,20 +26,69 @@
 
     header {
       background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 20px;
+      border-bottom: 2px solid var(--border);
+      padding: 8px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
     }
 
-    header h1 { font-size: 1.2rem; color: var(--primary); }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .top-mode-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #eee9e5;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .top-mode-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #555;
+      transition: all 0.2s ease;
+    }
+
+    .top-mode-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { background: var(--primary-hover); }
+
+    .btn-secondary { background: #eee9e5; color: #333; }
+    .btn-secondary:hover { background: #e0d8d2; }
 
     .workspace { display: flex; flex: 1; overflow: hidden; }
 
     aside {
-      width: 360px;
+      width: 350px;
       background: #fff;
       border-right: 1px solid var(--border);
       padding: 16px;
@@ -60,42 +109,6 @@
       font-size: 0.85rem;
     }
 
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 9px 12px;
-      border-radius: 5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn:hover { background: var(--primary-hover); }
-
-    .btn-secondary { background: #eee9e5; color: #333; }
-    .btn-secondary:hover { background: #e0d8d2; }
-
-    /* Workflow Mode Selector */
-    .mode-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .mode-tab {
-      padding: 8px 4px;
-      text-align: center;
-      border: 2px solid var(--border);
-      border-radius: 5px;
-      background: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.78rem;
-    }
-    .mode-tab.active { border-color: var(--primary); background: #fbf5f6; color: var(--primary); }
-
     .section-selector {
       display: flex;
       gap: 6px;
@@ -103,7 +116,7 @@
       margin-top: 4px;
     }
     .sec-badge {
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 14px;
       background: #eee;
       cursor: pointer;
@@ -112,7 +125,6 @@
     }
     .sec-badge.active { background: var(--primary); color: white; }
 
-    /* Yardage scroll */
     .catalog-scroll {
       max-height: 90px;
       overflow-y: auto;
@@ -131,10 +143,22 @@
     main {
       flex: 1;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       background: #ebe6e2;
       position: relative;
+    }
+
+    .status-bar {
+      margin-bottom: 12px;
+      background: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #666;
+      border: 1px solid var(--border);
     }
 
     .canvas-container { background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
@@ -149,10 +173,7 @@
       #print-container, #print-container * { visibility: visible; }
       #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
 
-      @page {
-        size: letter portrait;
-        margin: 0.4in;
-      }
+      @page { size: letter portrait; margin: 0.4in; }
 
       .print-page {
         width: 7.7in;
@@ -162,16 +183,9 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        box-sizing: border-box;
       }
 
-      .print-header {
-        border-bottom: 2px solid #000;
-        padding-bottom: 6px;
-        margin-bottom: 12px;
-        position: relative;
-      }
-
+      .print-header { border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 12px; position: relative; }
       .calibration-box {
         width: 1in;
         height: 1in;
@@ -185,7 +199,6 @@
         position: absolute;
         top: 0;
         right: 0;
-        line-height: 1.2;
       }
 
       .legend-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
@@ -205,7 +218,17 @@
 <body>
 
   <header>
-    <h1>Joy in the Seam — FPP QuiltAssistant</h1>
+    <div class="brand-title">Joy in the Seam — FPP Designer</div>
+
+    <div class="top-mode-container">
+      <button class="top-mode-btn active" id="btnModeSections" onclick="setMode('sections')">
+        1. Cut Sections (A, B, C...)
+      </button>
+      <button class="top-mode-btn" id="btnModePieces" onclick="setMode('pieces')">
+        2. Cut Pieces (A1, A2...)
+      </button>
+    </div>
+
     <div>
       <button class="btn" onclick="generateAndPrint()">🖨️ Export & Print Pattern</button>
     </div>
@@ -213,31 +236,19 @@
 
   <div class="workspace">
     <aside>
-      <!-- Step 1 vs Step 2 Modes -->
-      <div class="panel-group">
-        <label>Workflow Step</label>
-        <div class="mode-tabs">
-          <div class="mode-tab active" id="tabSections" onclick="setMode('sections')">1. Cut Sections (A, B...)</div>
-          <div class="mode-tab" id="tabPieces" onclick="setMode('pieces')">2. Cut Pieces (A1, A2...)</div>
-        </div>
-      </div>
-
-      <!-- Active Section Picker (Only in Step 2) -->
-      <div class="panel-group" id="sectionSelectGroup" style="display:none;">
-        <label>Select Active Section</label>
+      <div class="panel-group" id="sectionSelectGroup" style="display:none; background:#f4efeb; padding:10px; border-radius:6px;">
+        <label>Active Section to Subdivide:</label>
         <div class="section-selector" id="sectionBadges"></div>
       </div>
 
-      <!-- Yardage Swatches -->
       <div class="panel-group">
-        <label>Fabric Yardage Swatches</label>
+        <label>Joy in the Seam Fabric Swatches</label>
         <div class="catalog-scroll" id="catalogContainer">
           <small style="color:#777; grid-column:span 4; padding:6px;">Loading yardage...</small>
         </div>
         <input type="file" id="customFabricInput" accept="image/*" style="font-size:0.75rem; margin-top:4px;" />
       </div>
 
-      <!-- Reference Tracing -->
       <div class="panel-group">
         <label>Trace Reference Image</label>
         <input type="file" id="traceInput" accept="image/*" />
@@ -253,7 +264,7 @@
         <label>Pattern Parameters</label>
         <input type="text" id="patternTitle" value="My FPP Quilt Block" placeholder="Pattern Title" />
         <div style="display:flex; gap:8px; margin-top:4px;">
-          <input type="number" id="blockDim" value="6" step="0.5" title="Block Dimension (Square)" />
+          <input type="number" id="blockDim" value="6" step="0.5" title="Block Size (Square)" />
           <span style="align-self:center; font-size:0.8rem;">in</span>
           <input type="number" id="seamAllowance" value="0.25" step="0.125" title="Seam Allowance" />
           <span style="align-self:center; font-size:0.8rem;">SA</span>
@@ -262,24 +273,28 @@
 
       <div class="panel-group">
         <label>Calculated Sewing Sequence</label>
-        <div id="sewingSequenceDisplay" style="background:#eee9e5; padding:8px; border-radius:4px; font-size:0.75rem; font-family:monospace; line-height:1.4;">
-          A1
+        <div id="sewingSequenceDisplay" style="background:#eee9e5; padding:8px; border-radius:4px; font-size:0.75rem; font-family:monospace; line-height:1.4; white-space:pre-wrap;">
+          A = 1
         </div>
       </div>
 
       <div class="panel-group" style="display:flex; gap:6px; flex-direction:row;">
-        <button class="btn btn-secondary" style="flex:1" onclick="undoCut()">↩ Undo</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="undoCut()">↩ Undo (Ctrl+Z)</button>
         <button class="btn btn-secondary" style="flex:1" onclick="resetAll()">🗑️ Reset</button>
       </div>
 
-      <div style="margin-top:auto; font-size:0.75rem; color:#666; line-height:1.4;">
-        <strong>Instructions:</strong><br>
-        1. In <strong>Step 1</strong>, slice the whole block into Sections (A, B, C...).<br>
-        2. In <strong>Step 2</strong>, select a section and subdivide it into pieces (A1, A2...).
+      <div style="margin-top:auto; font-size:0.72rem; color:#666; line-height:1.4;">
+        <strong>Quick Tips:</strong><br>
+        • Blue circle indicates magnetic boundary snap.<br>
+        • Right-click or press <strong>Esc</strong> to cancel a line.<br>
+        • Use <strong>Ctrl + Z</strong> to undo any cut.
       </div>
     </aside>
 
     <main>
+      <div class="status-bar" id="instructionBar">
+        Mode: 1. Cut Sections — Click two points to slice the block into Sections (A, B...)
+      </div>
       <div class="canvas-container">
         <!-- 6in block default at 96 DPI = 576px -->
         <canvas id="designCanvas" width="576" height="576"></canvas>
@@ -287,7 +302,7 @@
     </main>
   </div>
 
-  <!-- MULTI-PAGE PRINT TARGET (QuiltAssistant Simba Format) -->
+  <!-- MULTI-PAGE PRINT TARGET -->
   <div id="print-container">
     <!-- Page 1: Overview and Swatch Key -->
     <div class="print-page" id="page-overview">
@@ -296,7 +311,7 @@
         <h1 id="p1Title">My FPP Quilt Block</h1>
         <p><strong>Joy in the Seam</strong> | Designed for Foundation Paper Piecing</p>
         <p>Finished Dimensions: <span id="p1Size">6" × 6"</span> | Seam Allowance: <span id="p1SA">0.25"</span></p>
-        <p><strong>Assembly Sewing Order:</strong> <span id="p1Order">A = 1</span></p>
+        <p><strong>Assembly Order:</strong> <span id="p1Order">A = 1</span></p>
       </div>
 
       <div style="text-align: center; margin: 10px 0;">
@@ -320,7 +335,6 @@
       </div>
     </div>
 
-    <!-- Container where individual Section Pages (A, B, C...) get injected -->
     <div id="sectionPagesContainer"></div>
   </div>
 
@@ -335,16 +349,6 @@
     let cutStartPoint = null;
     let snapIndicator = null;
 
-    /*
-      Data Model:
-      sections = [
-        {
-          id: 'A',
-          polygon: [{x,y}...],
-          tree: { id: 'A1', polygon: [...], left: null, right: null, fabric: null }
-        }
-      ]
-    */
     let sections = [];
     let activeSectionId = 'A';
     let historyStack = [];
@@ -484,18 +488,141 @@
       const activeSec = sections.find(s => s.id === activeSectionId);
       const pieceSeq = activeSec ? buildSewingSequenceString(activeSec.tree) : 'A1';
       const masterSeq = sections.map(s => s.id).join(' > ');
-      document.getElementById('sewingSequenceDisplay').innerText = `Section ${activeSectionId}: ${pieceSeq}\nMaster: (${masterSeq}) = 1`;
+      document.getElementById('sewingSequenceDisplay').innerText = `Active [Section ${activeSectionId}]:\n${pieceSeq}\n\nMaster Assembly:\n(${masterSeq}) = 1`;
+      
+      const bar = document.getElementById('instructionBar');
+      if (currentMode === 'sections') {
+        bar.innerText = `Mode: 1. Cut Sections — Click two points across the block to create Sections (A, B...)`;
+      } else {
+        bar.innerText = `Mode: 2. Cut Pieces — Slicing inside Section ${activeSectionId} (${pieceSeq})`;
+      }
     }
 
     function setMode(mode) {
       currentMode = mode;
-      document.getElementById('tabSections').classList.toggle('active', mode === 'sections');
-      document.getElementById('tabPieces').classList.toggle('active', mode === 'pieces');
+      cutStartPoint = null;
+      document.getElementById('btnModeSections').classList.toggle('active', mode === 'sections');
+      document.getElementById('btnModePieces').classList.toggle('active', mode === 'pieces');
       document.getElementById('sectionSelectGroup').style.display = (mode === 'pieces') ? 'block' : 'none';
+      updateUI();
       render();
     }
 
-    // 3. Geometry & Magnetic Snapping
+    // 3. Reliable Sutherland-Hodgman Polygon Slicing
+    function slicePolygon(poly, p1, p2) {
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      if (Math.hypot(dx, dy) < 1e-4) return null;
+
+      const side = p => (p.x - p1.x) * dy - (p.y - p1.y) * dx;
+
+      const leftPts = [];
+      const rightPts = [];
+
+      for (let i = 0; i < poly.length; i++) {
+        const cur = poly[i];
+        const next = poly[(i + 1) % poly.length];
+        const sCur = side(cur);
+        const sNext = side(next);
+
+        if (sCur >= -1e-6) leftPts.push(cur);
+        if (sCur <= 1e-6) rightPts.push(cur);
+
+        if ((sCur > 1e-6 && sNext < -1e-6) || (sCur < -1e-6 && sNext > 1e-6)) {
+          const t = sCur / (sCur - sNext);
+          const ip = {
+            x: cur.x + t * (next.x - cur.x),
+            y: cur.y + t * (next.y - cur.y)
+          };
+          leftPts.push(ip);
+          rightPts.push(ip);
+        }
+      }
+
+      const cleanL = cleanPoly(leftPts);
+      const cleanR = cleanPoly(rightPts);
+
+      if (cleanL.length >= 3 && cleanR.length >= 3) {
+        const aL = getArea(cleanL);
+        const aR = getArea(cleanR);
+        if (aL > 20 && aR > 20) {
+          return [cleanL, cleanR];
+        }
+      }
+      return null;
+    }
+
+    function cleanPoly(pts) {
+      if (!pts || pts.length === 0) return [];
+      const res = [];
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i];
+        const next = pts[(i + 1) % pts.length];
+        if (Math.hypot(p.x - next.x, p.y - next.y) > 0.5) {
+          res.push(p);
+        }
+      }
+      return res;
+    }
+
+    function getArea(pts) {
+      let area = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const j = (i + 1) % pts.length;
+        area += (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
+      }
+      return Math.abs(area / 2);
+    }
+
+    function getCentroid(pts) {
+      let cx = 0, cy = 0, area = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const j = (i + 1) % pts.length;
+        const factor = (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
+        cx += (pts[i].x + pts[j].x) * factor;
+        cy += (pts[i].y + pts[j].y) * factor;
+        area += factor;
+      }
+      area = area / 2;
+      if (Math.abs(area) < 1e-5) return pts[0];
+      return { x: cx / (6 * area), y: cy / (6 * area) };
+    }
+
+    function pointInPoly(pt, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i].x, yi = poly[i].y;
+        const xj = poly[j].x, yj = poly[j].y;
+        const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    // Identifies the single candidate piece to slice
+    function findBestSliceCandidate(candidates, p1, p2) {
+      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      let best = null;
+      let bestDist = Infinity;
+
+      for (const c of candidates) {
+        const split = slicePolygon(c.polygon, p1, p2);
+        if (split) {
+          if (pointInPoly(mid, c.polygon)) {
+            return { candidate: c, split };
+          }
+          const cent = getCentroid(c.polygon);
+          const d = Math.hypot(mid.x - cent.x, mid.y - cent.y);
+          if (d < bestDist) {
+            bestDist = d;
+            best = { candidate: c, split };
+          }
+        }
+      }
+      return best;
+    }
+
+    // 4. Boundary Snapping
     function getMousePos(e) {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -506,11 +633,10 @@
       };
     }
 
-    function findSnapPoint(pt, radius = 16) {
+    function findSnapPoint(pt, radius = 18) {
       let closestPt = null;
       let minDistance = radius;
 
-      // Determine active polygons to snap against
       let candidatePolys = [];
       if (currentMode === 'sections') {
         candidatePolys = sections.map(s => s.polygon);
@@ -548,81 +674,7 @@
         }
       });
 
-      return closestPt || pt;
-    }
-
-    function lineIntersection(p1, p2, a, b) {
-      const d = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
-    }
-
-    function sliceSinglePolygon(poly, p1, p2) {
-      const hits = [];
-      for (let i = 0; i < poly.length; i++) {
-        const a = poly[i];
-        const b = poly[(i + 1) % poly.length];
-
-        const d = (p1.x - p2.x) * (b.y - a.y) - (p1.y - p2.y) * (b.x - a.x);
-        if (Math.abs(d) < 1e-6) continue;
-        const t = ((p1.x - a.x) * (b.y - a.y) - (p1.y - a.y) * (b.x - a.x)) / d;
-        const u = -((p1.x - p2.x) * (p1.y - a.y) - (p1.y - p2.y) * (p1.x - a.x)) / d;
-
-        if (t >= -1e-4 && t <= 1 + 1e-4 && u >= -1e-4 && u <= 1 + 1e-4) {
-          const hitPt = { x: a.x + u * (b.x - a.x), y: a.y + u * (b.y - a.y) };
-          if (!hits.some(h => Math.hypot(h.x - hitPt.x, h.y - hitPt.y) < 1.0)) {
-            hits.push({ ...hitPt, edgeIndex: i });
-          }
-        }
-      }
-
-      if (hits.length !== 2) return null;
-      hits.sort((a, b) => a.edgeIndex - b.edgeIndex);
-
-      const [h1, h2] = hits;
-      const poly1 = [ { x: h1.x, y: h1.y } ];
-      for (let i = h1.edgeIndex + 1; i <= h2.edgeIndex; i++) poly1.push({ ...poly[i] });
-      poly1.push({ x: h2.x, y: h2.y });
-
-      const poly2 = [ { x: h2.x, y: h2.y } ];
-      for (let i = h2.edgeIndex + 1; i < poly.length; i++) poly2.push({ ...poly[i] });
-      for (let i = 0; i <= h1.edgeIndex; i++) poly2.push({ ...poly[i] });
-      poly2.push({ x: h1.x, y: h1.y });
-
-      if (getArea(poly1) > 30 && getArea(poly2) > 30) return [poly1, poly2];
-      return null;
-    }
-
-    function pointInPoly(pt, poly) {
-      let inside = false;
-      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        const xi = poly[i].x, yi = poly[i].y;
-        const xj = poly[j].x, yj = poly[j].y;
-        const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-      }
-      return inside;
-    }
-
-    function getArea(pts) {
-      let area = 0;
-      for (let i = 0; i < pts.length; i++) {
-        const j = (i + 1) % pts.length;
-        area += (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
-      }
-      return Math.abs(area / 2);
-    }
-
-    function getCentroid(pts) {
-      let cx = 0, cy = 0, area = 0;
-      for (let i = 0; i < pts.length; i++) {
-        const j = (i + 1) % pts.length;
-        const factor = (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
-        cx += (pts[i].x + pts[j].x) * factor;
-        cy += (pts[i].y + pts[j].y) * factor;
-        area += factor;
-      }
-      area = area / 2;
-      if (Math.abs(area) < 1e-5) return pts[0];
-      return { x: cx / (6 * area), y: cy / (6 * area) };
+      return closestPt;
     }
 
     function offsetPolygon(poly, offsetPx) {
@@ -662,54 +714,51 @@
         const t = ((l2.p1.x - l1.p1.x) * l2.dy - (l2.p1.y - l1.p1.y) * l2.dx) / denom;
         offsetPts.push({ x: l1.p1.x + t * l1.dx, y: l1.p1.y + t * l1.dy });
       }
-      return offsetPts;
+
+      return offsetPts.length >= 3 ? offsetPts : poly;
     }
 
-    // 4. Execution & Cutting
+    // 5. Slice Execution
     function attemptSlice(p1, p2) {
-      historyStack.push(JSON.stringify(sections));
-      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
-
       if (currentMode === 'sections') {
-        // Find target section
-        let targetSec = sections.find(s => pointInPoly(mid, s.polygon));
-        if (!targetSec) targetSec = sections.find(s => sliceSinglePolygon(s.polygon, p1, p2) !== null);
+        const match = findBestSliceCandidate(sections, p1, p2);
+        if (match) {
+          historyStack.push(JSON.stringify(sections));
 
-        if (targetSec) {
-          const split = sliceSinglePolygon(targetSec.polygon, p1, p2);
-          if (split) {
-            const nextLetter = String.fromCharCode(65 + sections.length);
-            targetSec.polygon = split[0];
-            targetSec.tree = { id: `${targetSec.id}1`, polygon: split[0], left: null, right: null, fabric: null };
+          const targetSec = match.candidate;
+          const split = match.split;
+          const nextLetter = String.fromCharCode(65 + sections.length);
 
-            sections.push({
-              id: nextLetter,
-              polygon: split[1],
-              tree: { id: `${nextLetter}1`, polygon: split[1], left: null, right: null, fabric: null }
-            });
+          targetSec.polygon = split[0];
+          targetSec.tree = { id: `${targetSec.id}1`, polygon: split[0], left: null, right: null, fabric: null };
 
-            activeSectionId = nextLetter;
-            renumberAll();
-            render();
-          }
+          sections.push({
+            id: nextLetter,
+            polygon: split[1],
+            tree: { id: `${nextLetter}1`, polygon: split[1], left: null, right: null, fabric: null }
+          });
+
+          activeSectionId = nextLetter;
+          renumberAll();
+          render();
         }
       } else {
-        // Cut piece within active section
         const sec = sections.find(s => s.id === activeSectionId);
         if (!sec) return;
 
         const leaves = getLeaves(sec.tree);
-        let targetLeaf = leaves.find(l => pointInPoly(mid, l.polygon));
-        if (!targetLeaf) targetLeaf = leaves.find(l => sliceSinglePolygon(l.polygon, p1, p2) !== null);
+        const match = findBestSliceCandidate(leaves, p1, p2);
+        if (match) {
+          historyStack.push(JSON.stringify(sections));
 
-        if (targetLeaf) {
-          const split = sliceSinglePolygon(targetLeaf.polygon, p1, p2);
-          if (split) {
-            targetLeaf.left = { id: '', polygon: split[0], left: null, right: null, fabric: targetLeaf.fabric };
-            targetLeaf.right = { id: '', polygon: split[1], left: null, right: null, fabric: targetLeaf.fabric };
-            renumberAll();
-            render();
-          }
+          const targetLeaf = match.candidate;
+          const split = match.split;
+
+          targetLeaf.left = { id: '', polygon: split[0], left: null, right: null, fabric: targetLeaf.fabric };
+          targetLeaf.right = { id: '', polygon: split[1], left: null, right: null, fabric: targetLeaf.fabric };
+
+          renumberAll();
+          render();
         }
       }
     }
@@ -717,6 +766,9 @@
     function undoCut() {
       if (historyStack.length > 0) {
         sections = JSON.parse(historyStack.pop());
+        if (!sections.some(s => s.id === activeSectionId)) {
+          activeSectionId = sections[0].id;
+        }
         renumberAll();
         render();
       }
@@ -726,35 +778,59 @@
       if (confirm('Reset entire block back to a blank canvas?')) initBlock();
     }
 
-    // 5. Canvas Interactions
+    // 6. Canvas Listeners
     canvas.addEventListener('mousemove', (e) => {
       const raw = getMousePos(e);
       snapIndicator = findSnapPoint(raw);
       render();
 
       if (cutStartPoint) {
+        const target = snapIndicator || raw;
         ctx.beginPath();
         ctx.setLineDash([5, 5]);
         ctx.strokeStyle = '#e74c3c';
         ctx.lineWidth = 2;
         ctx.moveTo(cutStartPoint.x, cutStartPoint.y);
-        ctx.lineTo(snapIndicator.x, snapIndicator.y);
+        ctx.lineTo(target.x, target.y);
         ctx.stroke();
         ctx.setLineDash([]);
       }
     });
 
     canvas.addEventListener('click', (e) => {
-      const pt = snapIndicator || getMousePos(e);
+      const raw = getMousePos(e);
+      const pt = snapIndicator ? { ...snapIndicator } : { ...raw };
+
       if (!cutStartPoint) {
         cutStartPoint = pt;
       } else {
-        if (Math.hypot(cutStartPoint.x - pt.x, cutStartPoint.y - pt.y) > 8) {
-          attemptSlice(cutStartPoint, pt);
-        }
+        const p1 = { ...cutStartPoint };
+        const p2 = { ...pt };
         cutStartPoint = null;
+
+        if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > 6) {
+          attemptSlice(p1, p2);
+        }
       }
       render();
+    });
+
+    // Right-click or Escape cancels active cut
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      cutStartPoint = null;
+      render();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        cutStartPoint = null;
+        render();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undoCut();
+      }
     });
 
     document.getElementById('traceInput').addEventListener('change', (e) => {
@@ -775,7 +851,7 @@
       render();
     });
 
-    // 6. Canvas Render
+    // 7. Canvas Render
     function render(hideCursor = false) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -799,22 +875,24 @@
           for (let i = 1; i < leaf.polygon.length; i++) ctx.lineTo(leaf.polygon[i].x, leaf.polygon[i].y);
           ctx.closePath();
 
-          ctx.fillStyle = isSecActive ? 'rgba(255,255,255,0.7)' : 'rgba(235,235,235,0.4)';
+          ctx.fillStyle = (currentMode === 'pieces' && !isSecActive)
+            ? 'rgba(230, 230, 230, 0.45)'
+            : 'rgba(255, 255, 255, 0.7)';
           ctx.fill();
 
           ctx.strokeStyle = '#231f20';
-          ctx.lineWidth = isSecActive ? 1.5 : 1.0;
+          ctx.lineWidth = 1.5;
           ctx.stroke();
 
           const c = getCentroid(leaf.polygon);
-          ctx.fillStyle = '#231f20';
+          ctx.fillStyle = (currentMode === 'pieces' && !isSecActive) ? '#888' : '#231f20';
           ctx.font = 'bold 12px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(leaf.id, c.x, c.y);
         });
 
-        // Bold outline for Section boundaries
+        // Boundary line around section
         ctx.beginPath();
         ctx.moveTo(sec.polygon[0].x, sec.polygon[0].y);
         for (let i = 1; i < sec.polygon.length; i++) ctx.lineTo(sec.polygon[i].x, sec.polygon[i].y);
@@ -827,7 +905,7 @@
       if (!hideCursor) {
         if (snapIndicator) {
           ctx.strokeStyle = '#2980b9';
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.5;
           ctx.beginPath();
           ctx.arc(snapIndicator.x, snapIndicator.y, 6, 0, Math.PI * 2);
           ctx.stroke();
@@ -842,16 +920,15 @@
       }
     }
 
-    // 7. Multi-Page Vector Print Generator
+    // 8. Multi-Page Vector Print Engine
     function generateAndPrint() {
       const sa = parseFloat(document.getElementById('seamAllowance').value) || 0.25;
       const saPx = sa * DPI;
       const title = document.getElementById('patternTitle').value;
       const dim = document.getElementById('blockDim').value;
 
-      render(true); // clean preview without red dots
+      render(true);
 
-      // Page 1 Setup (Master Cover Sheet)
       document.getElementById('p1Title').innerText = title;
       document.getElementById('p1Size').innerText = `${dim}" × ${dim}"`;
       document.getElementById('p1SA').innerText = `${sa}"`;
@@ -870,7 +947,6 @@
         });
       }
 
-      // Pages 2+: One page per Section (Vector SVG)
       const container = document.getElementById('sectionPagesContainer');
       container.innerHTML = '';
 
@@ -894,20 +970,16 @@
         const totalH = canvas.height + (saPx * 2);
         const leaves = getLeaves(sec.tree);
 
-        // Build mirrored vector SVG
         let svg = `<svg width="${(totalW/DPI).toFixed(2)}in" height="${(totalH/DPI).toFixed(2)}in" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">`;
         svg += `<g transform="translate(${totalW - saPx}, ${saPx}) scale(-1, 1)">`;
 
-        // Outer Dashed Seam Allowance
         const offsetPoly = offsetPolygon(sec.polygon, saPx);
         const offsetPts = offsetPoly.map(p => `${p.x},${p.y}`).join(' ');
         svg += `<polygon points="${offsetPts}" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6,4"/>`;
 
-        // Solid Boundary of Section
         const secPts = sec.polygon.map(p => `${p.x},${p.y}`).join(' ');
         svg += `<polygon points="${secPts}" fill="none" stroke="#000" stroke-width="2"/>`;
 
-        // Interior Seams & Labels
         leaves.forEach(leaf => {
           const pts = leaf.polygon.map(p => `${p.x},${p.y}`).join(' ');
           svg += `<polygon points="${pts}" fill="none" stroke="#000" stroke-width="1.5"/>`;
@@ -916,7 +988,6 @@
           svg += `<text x="${c.x}" y="${c.y}" transform="translate(${c.x * 2}, 0) scale(-1, 1)" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000" text-anchor="middle" dominant-baseline="central">${leaf.id}</text>`;
         });
 
-        // Glue Edge Indicator
         svg += `<text x="${sec.polygon[0].x}" y="${sec.polygon[0].y - 6}" font-family="sans-serif" font-size="11" font-weight="bold" fill="#000">Glue Edge #${idx + 1} (Section ${sec.id})</text>`;
 
         svg += `</g></svg>`;
