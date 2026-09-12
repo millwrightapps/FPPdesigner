@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Joy in the Seam | FPP Pattern Creator</title>
+  <title>Joy in the Seam | FPP QuiltAssistant</title>
   <style>
     :root {
       --primary: #9b6b78;
       --primary-hover: #825763;
-      --bg-cream: #faf7f5;
+      --accent: #d8a48f;
+      --bg: #faf7f5;
       --dark: #2e282a;
       --border: #ddd2cc;
-      --accent: #d8a48f;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
     body {
-      background-color: var(--bg-cream);
+      background-color: var(--bg);
       color: var(--dark);
       display: flex;
       flex-direction: column;
@@ -37,46 +32,29 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      z-index: 10;
     }
 
-    header h1 {
-      font-size: 1.25rem;
-      color: var(--primary);
-    }
+    header h1 { font-size: 1.25rem; color: var(--primary); }
 
-    .workspace {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+    .workspace { display: flex; flex: 1; overflow: hidden; }
 
-    /* Left Control Sidebar */
+    /* Left Controls Sidebar */
     aside {
-      width: 360px;
+      width: 370px;
       background: #fff;
       border-right: 1px solid var(--border);
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       overflow-y: auto;
     }
 
-    .panel-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .panel-group { display: flex; flex-direction: column; gap: 6px; }
+    .panel-group label { font-size: 0.75rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .panel-group label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #444;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input[type="text"], input[type="number"], input[type="file"], select {
+    input, select {
       width: 100%;
       padding: 7px 10px;
       border: 1px solid var(--border);
@@ -88,90 +66,63 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 9px 14px;
-      border-radius: 6px;
+      padding: 9px 12px;
+      border-radius: 5px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       justify-content: center;
       align-items: center;
       gap: 6px;
-      transition: background 0.2s;
     }
+    .btn:hover { background: var(--primary-hover); }
 
-    .btn:hover {
-      background: var(--primary-hover);
-    }
+    .btn-secondary { background: #f0ece9; color: #333; }
+    .btn-secondary:hover { background: #e2ddd8; }
 
-    .btn-secondary {
-      background: #f0ece9;
-      color: #333;
+    /* Tool Selector Buttons */
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tool-btn {
+      padding: 10px;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
-    .btn-secondary:hover {
-      background: #e2ddd8;
-    }
+    .tool-btn.active { border-color: var(--primary); background: #fbf5f6; color: var(--primary); }
 
-    /* Fabric Catalog Browser */
+    /* Section Pills */
+    .section-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .section-pill {
+      padding: 5px 12px;
+      border-radius: 16px;
+      background: #eee;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .section-pill.active { background: var(--primary); color: white; }
+
+    /* Yardage Catalog */
     .catalog-scroll {
-      max-height: 170px;
+      max-height: 120px;
       overflow-y: auto;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px;
+      border-radius: 4px;
+      padding: 4px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      background: #fdfdfd;
+      gap: 4px;
+      background: #fafafa;
     }
+    .catalog-item { cursor: pointer; border: 2px solid transparent; border-radius: 4px; overflow: hidden; height: 44px; }
+    .catalog-item img { width: 100%; height: 100%; object-fit: cover; }
+    .catalog-item.selected { border-color: var(--primary); }
 
-    .catalog-item {
-      cursor: pointer;
-      border: 2px solid transparent;
-      border-radius: 4px;
-      overflow: hidden;
-      text-align: center;
-      background: #eee;
-    }
-
-    .catalog-item:hover {
-      border-color: var(--primary);
-    }
-
-    .catalog-item img {
-      width: 100%;
-      height: 52px;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Active Project Palette */
-    .palette-list {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .palette-chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #f4efeb;
-      border: 1px solid var(--border);
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .palette-chip img {
-      width: 22px;
-      height: 22px;
-      object-fit: cover;
-      border-radius: 3px;
-    }
-
-    /* Canvas Stage */
+    /* Main Stage */
     main {
       flex: 1;
       display: flex;
@@ -181,62 +132,29 @@
       position: relative;
     }
 
-    .canvas-card {
-      background: white;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-      position: relative;
-      display: inline-block;
-    }
+    .canvas-container { background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    canvas { display: block; cursor: crosshair; }
 
-    canvas {
-      cursor: crosshair;
-      display: block;
-    }
-
-    /* Piece Assignment Table */
-    .piece-table {
-      width: 100%;
-      font-size: 0.8rem;
-      border-collapse: collapse;
-      margin-top: 4px;
-    }
-
-    .piece-table th, .piece-table td {
-      border: 1px solid var(--border);
-      padding: 5px;
-      text-align: left;
-    }
-
-    /* PRINT RULES */
-    #print-section {
-      display: none;
-    }
+    /* MULTI-PAGE PRINT STYLES */
+    #print-container { display: none; }
 
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      body {
-        background: white;
-        margin: 0;
-        padding: 0;
-      }
-      #print-section, #print-section * {
-        visibility: visible;
-      }
-      #print-section {
-        display: block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0.4in;
-      }
-      .print-flex {
+      body * { visibility: hidden; }
+      body { background: white; margin: 0; padding: 0; }
+      #print-container, #print-container * { visibility: visible; }
+      #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+      @page { size: letter portrait; margin: 0.4in; }
+
+      .print-page {
+        width: 7.7in;
+        height: 10.2in;
+        page-break-after: always;
+        position: relative;
         display: flex;
-        gap: 30px;
-        align-items: flex-start;
+        flex-direction: column;
       }
+
+      .print-header { border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
       .calibration-box {
         width: 1in;
         height: 1in;
@@ -245,440 +163,743 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-size: 9px;
+        font-size: 8px;
         font-weight: bold;
-        margin-bottom: 12px;
+        position: absolute;
+        top: 0;
+        right: 0;
       }
-      .legend-table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 15px;
-        font-size: 11px;
-      }
-      .legend-table th, .legend-table td {
-        border: 1px solid #777;
-        padding: 6px;
-      }
-      .legend-table img {
-        width: 32px;
-        height: 32px;
-        object-fit: cover;
-      }
+
+      .legend-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+      .legend-table th, .legend-table td { border: 1px solid #555; padding: 6px; text-align: left; }
+      .legend-table img { width: 28px; height: 28px; object-fit: cover; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Joy in the Seam — FPP Designer</h1>
+    <h1>Joy in the Seam — FPP QuiltAssistant</h1>
     <div>
-      <button class="btn" onclick="triggerPrint()">🖨️ Print Pattern to Scale</button>
+      <button class="btn" onclick="triggerPrint()">🖨️ Export & Print Pattern</button>
     </div>
   </header>
 
   <div class="workspace">
     <aside>
-      <!-- Section 1: Joy in the Seam Fabric Catalog -->
+      <!-- Tool Selection -->
       <div class="panel-group">
-        <label>Joy in the Seam Yardage</label>
-        <input type="text" id="catalogSearch" placeholder="Filter fabrics (e.g. Starry, Speckled)..." oninput="filterCatalog()" />
+        <label>Select Tool Mode</label>
+        <div class="tool-grid">
+          <div class="tool-btn active" id="toolSlice" onclick="setTool('slice')">✂️ Slice Polygon</div>
+          <div class="tool-btn" id="toolPaint" onclick="setTool('paint')">🎨 Fabric Paint</div>
+        </div>
+      </div>
+
+      <!-- Section Navigation -->
+      <div class="panel-group">
+        <label>Active Section</label>
+        <div class="section-pills" id="sectionPills"></div>
+        <button class="btn btn-secondary" style="font-size:0.75rem; margin-top:4px;" onclick="addSection()">+ Add New Section</button>
+      </div>
+
+      <hr style="border:0; border-top:1px solid var(--border);" />
+
+      <!-- Joy in the Seam Yardage Swatches -->
+      <div class="panel-group">
+        <label>Active Fabric Swatch</label>
         <div class="catalog-scroll" id="catalogContainer">
-          <small style="color:#777; grid-column: span 4; padding: 10px;">Loading fabrics...</small>
+          <small style="color:#777; grid-column:span 4; padding:6px;">Loading yardage...</small>
         </div>
+        <input type="file" id="customFabricInput" accept="image/*" style="font-size:0.75rem; margin-top:4px;" />
       </div>
 
-      <!-- Section 2: Custom Upload & Active Palette -->
+      <!-- Trace Background -->
       <div class="panel-group">
-        <label>Or Upload Stash Fabric</label>
-        <input type="file" id="customSwatchInput" accept="image/*" />
-        
-        <label style="margin-top: 8px;">Active Project Palette</label>
-        <div class="palette-list" id="paletteChips">
-          <span style="font-size:0.75rem; color:#888;">Select fabrics above to add to your pattern palette.</span>
-        </div>
-      </div>
-
-      <hr style="border: 0; border-top: 1px solid var(--border);" />
-
-      <!-- Section 3: Reference Image Tracing -->
-      <div class="panel-group">
-        <label>Trace Background Image</label>
-        <input type="file" id="imageLoader" accept="image/*" />
-        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#666; margin-top:4px;">
-          <span>Trace Opacity</span>
-          <span id="opacityVal">40%</span>
+        <label>Trace Reference Image</label>
+        <input type="file" id="traceInput" accept="image/*" />
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#666;">
+          <span>Opacity</span><span id="opacityVal">40%</span>
         </div>
         <input type="range" id="opacitySlider" min="0" max="100" value="40" />
       </div>
 
-      <hr style="border: 0; border-top: 1px solid var(--border);" />
+      <hr style="border:0; border-top:1px solid var(--border);" />
 
-      <!-- Section 4: Seam & Block Configuration -->
+      <!-- Assembly & Parameters -->
       <div class="panel-group">
-        <label>Seam Allowance (Inches)</label>
-        <input type="number" id="seamAllowance" value="0.25" step="0.125" min="0" max="1" />
+        <label>Pattern Parameters</label>
+        <input type="text" id="patternTitle" value="My FPP Quilt Block" placeholder="Pattern Title" />
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <input type="number" id="blockDim" value="6" step="0.5" title="Block Dimension (Square)" />
+          <span style="align-self:center; font-size:0.8rem;">in</span>
+          <input type="number" id="seamAllowance" value="0.25" step="0.125" title="Seam Allowance (Inches)" />
+          <span style="align-self:center; font-size:0.8rem;">SA</span>
+        </div>
       </div>
 
       <div class="panel-group">
-        <label>
-          <input type="checkbox" id="mirrorToggle" /> Mirror Template (Sewing Side)
-        </label>
-      </div>
-
-      <div class="panel-group">
-        <label>Piece Assignment</label>
-        <div id="pieceAssignmentsContainer" style="max-height: 120px; overflow-y:auto;">
-          <table class="piece-table" id="pieceTable">
-            <thead>
-              <tr>
-                <th>Piece</th>
-                <th>Assigned Fabric</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Dynamic rows -->
-            </tbody>
-          </table>
+        <label>Calculated Sewing Sequence</label>
+        <div id="sewingSequenceDisplay" style="background:#f4efeb; padding:8px; border-radius:4px; font-size:0.75rem; font-family:monospace; line-height:1.4;">
+          A1
         </div>
       </div>
 
       <div class="panel-group" style="display:flex; gap:6px; flex-direction:row;">
-        <button class="btn btn-secondary" style="flex:1" onclick="undoLastLine()">↩ Undo</button>
-        <button class="btn btn-secondary" style="flex:1" onclick="clearLines()">🗑️ Clear</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="undoLastCut()">↩ Undo Cut</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="resetCurrentSection()">🗑️ Reset</button>
       </div>
     </aside>
 
     <main>
-      <div class="canvas-card">
-        <!-- 6" x 6" block at 96 DPI = 576px -->
+      <div class="canvas-container">
+        <!-- 6in x 6in block default at 96 DPI = 576px -->
         <canvas id="designCanvas" width="576" height="576"></canvas>
       </div>
     </main>
   </div>
 
-  <!-- Hidden Print View (Prints 1:1 Scale) -->
-  <div id="print-section">
-    <div style="margin-bottom: 15px;">
-      <h2>Joy in the Seam — Foundation Paper Piecing Template</h2>
-      <p>Block Size: 6" x 6" | Seam Allowance: <span id="printSA">0.25</span>"</p>
-    </div>
+  <!-- MULTI-PAGE PRINT TARGET -->
+  <div id="print-container">
+    <!-- Page 1: Overview and Swatch Key -->
+    <div class="print-page" id="page-overview">
+      <div class="print-header">
+        <div class="calibration-box">1 INCH<br>CALIBRATION<br>SQUARE</div>
+        <h1 id="p1Title">Pattern Title</h1>
+        <p><strong>Joy in the Seam</strong> | Designed for Foundation Paper Piecing</p>
+        <p>Finished Dimensions: <span id="p1Size">6" × 6"</span> | Seam Allowance: <span id="p1SA">0.25</span>"</p>
+        <p><strong>Calculated Sewing Order:</strong> <span id="p1Order">A1</span></p>
+      </div>
 
-    <div class="print-flex">
-      <div>
-        <div class="calibration-box">
-          1 INCH<br>TEST SQUARE<br>(Measure with ruler)
-        </div>
-        <img id="printImage" style="border: 1px solid #333;" alt="FPP Pattern" />
+      <div style="text-align: center; margin: 15px 0;">
+        <img id="p1OverviewImg" style="border: 1px solid #444; max-height: 4.2in;" alt="Master Pattern" />
+        <p style="font-size: 10px; color:#555; margin-top: 4px;">Master Block Layout (Mirrored for FPP construction)</p>
       </div>
 
       <div style="flex: 1;">
-        <h3>Fabric Swatch Legend & Cutting Key</h3>
-        <table class="legend-table" id="printLegendTable">
+        <h3 style="font-size: 12px; margin-bottom: 4px;">Fabric Swatch Legend & Cutting Key</h3>
+        <table class="legend-table" id="p1Legend">
           <thead>
             <tr>
               <th>Tag</th>
               <th>Swatch</th>
               <th>Fabric Name</th>
-              <th>Used in Pieces</th>
+              <th>Pieces Used</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- Populated on print -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </div>
+
+    <!-- Additional printable section pages will be dynamically inserted here -->
+    <div id="sectionPagesContainer"></div>
   </div>
 
   <script>
+    const DPI = 96;
     const canvas = document.getElementById('designCanvas');
     const ctx = canvas.getContext('2d');
-    const DPI = 96;
 
-    let refImage = null;
-    let imageOpacity = 0.4;
-    let lines = [];
-    let startPoint = null;
-    let isMirrored = false;
+    let activeTool = 'slice'; // 'slice' or 'paint'
+    let traceImg = null;
+    let traceOpacity = 0.4;
+    let cutStartPoint = null;
 
-    // Fabric Store State
-    let storeFabrics = [];
-    let projectPalette = []; // [{ id: 'A', name: '...', imgUrl: '...', imgObj: Image }]
-    let pieceAssignments = {}; // { 'A1': 'A', 'A2': 'B' }
+    // Sections & Cut Trees
+    let sections = ['A'];
+    let activeSection = 'A';
 
-    // 1. Fetch Yardage Collection from Joy In The Seam (Shopify JSON API)
-    async function fetchYardage() {
-      const directUrl = 'https://joyintheseam.com/collections/yardage-1/products.json?limit=50';
-      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+    /*
+      Each section has a Binary Cut Tree:
+      Node: {
+        id: string,
+        polygon: [{x,y}, ...],
+        left: Node | null,
+        right: Node | null,
+        fabric: { tag, name, imgObj } | null,
+        cutLine: { p1, p2 } | null
+      }
+    */
+    let sectionTrees = {};
+
+    // Fabrics & Palettes
+    let activeFabric = null;
+    let projectPalette = [];
+
+    // 1. Initialize Root Block
+    function initSectionTree(sec) {
+      sectionTrees[sec] = {
+        id: `${sec}1`,
+        polygon: [
+          { x: 0, y: 0 },
+          { x: canvas.width, y: 0 },
+          { x: canvas.width, y: canvas.height },
+          { x: 0, y: canvas.height }
+        ],
+        left: null,
+        right: null,
+        fabric: null,
+        cutLine: null
+      };
+    }
+    initSectionTree('A');
+
+    // 2. Fetch Joy in the Seam Yardage Collection
+    async function loadYardage() {
+      const url = 'https://joyintheseam.com/collections/yardage-1/products.json?limit=30';
+      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
 
       try {
-        let res = await fetch(directUrl);
-        if (!res.ok) throw new Error('Direct fetch failed, trying proxy');
+        let res = await fetch(url);
+        if (!res.ok) throw new Error();
         let data = await res.json();
         renderCatalog(data.products);
-      } catch (err) {
+      } catch (e) {
         try {
-          let res = await fetch(proxyUrl);
+          let res = await fetch(proxy);
           let data = await res.json();
           renderCatalog(data.products);
-        } catch (proxyErr) {
+        } catch (err) {
           document.getElementById('catalogContainer').innerHTML = 
-            '<small style="color:red; grid-column:span 4;">Could not load live store feed. You can still upload swatches manually below.</small>';
+            '<small style="color:#999; grid-column:span 4;">Catalog offline. Use custom upload.</small>';
         }
       }
     }
 
     function renderCatalog(products) {
-      storeFabrics = products.filter(p => p.images && p.images.length > 0);
-      populateCatalogUI(storeFabrics);
-    }
-
-    function populateCatalogUI(items) {
       const container = document.getElementById('catalogContainer');
       container.innerHTML = '';
-
-      items.forEach(prod => {
+      products.filter(p => p.images && p.images.length > 0).forEach((prod, i) => {
         const item = document.createElement('div');
         item.className = 'catalog-item';
         item.title = prod.title;
 
         const img = document.createElement('img');
         img.src = prod.images[0].src;
-        img.loading = 'lazy';
-
         item.appendChild(img);
-        item.onclick = () => addFabricToPalette(prod.title, prod.images[0].src);
+
+        item.onclick = () => {
+          document.querySelectorAll('.catalog-item').forEach(el => el.classList.remove('selected'));
+          item.classList.add('selected');
+
+          const imgObj = new Image();
+          imgObj.crossOrigin = 'Anonymous';
+          imgObj.src = prod.images[0].src;
+
+          let existing = projectPalette.find(f => f.name === prod.title);
+          if (!existing) {
+            existing = { tag: `F${projectPalette.length + 1}`, name: prod.title, imgObj };
+            projectPalette.push(existing);
+          }
+          activeFabric = existing;
+        };
         container.appendChild(item);
       });
     }
 
-    function filterCatalog() {
-      const q = document.getElementById('catalogSearch').value.toLowerCase();
-      const filtered = storeFabrics.filter(p => p.title.toLowerCase().includes(q));
-      populateCatalogUI(filtered);
-    }
-
-    // 2. Manage Active Project Palette (Fabric A, B, C...)
-    function addFabricToPalette(name, imgUrl) {
-      if (projectPalette.some(f => f.imgUrl === imgUrl)) return; // prevent dupes
-      const tag = String.fromCharCode(65 + projectPalette.length); // A, B, C...
-
-      const imgObj = new Image();
-      imgObj.crossOrigin = 'Anonymous';
-      imgObj.src = imgUrl;
-
-      projectPalette.push({ tag, name, imgUrl, imgObj });
-      renderPaletteUI();
-      updatePieceTable();
-    }
-
-    document.getElementById('customSwatchInput').addEventListener('change', (e) => {
+    document.getElementById('customFabricInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        addFabricToPalette(file.name.replace(/\.[^/.]+$/, ""), ev.target.result);
+        const imgObj = new Image();
+        imgObj.src = ev.target.result;
+        const custom = { tag: `F${projectPalette.length + 1}`, name: file.name.replace(/\.[^/.]+$/, ""), imgObj };
+        projectPalette.push(custom);
+        activeFabric = custom;
+        alert(`Loaded swatch "${custom.name}" as [${custom.tag}]`);
       };
       reader.readAsDataURL(file);
     });
 
-    function renderPaletteUI() {
-      const container = document.getElementById('paletteChips');
-      container.innerHTML = '';
-      projectPalette.forEach(f => {
-        const chip = document.createElement('div');
-        chip.className = 'palette-chip';
-        chip.innerHTML = `<img src="${f.imgUrl}" alt="${f.name}"/> <span>Fabric ${f.tag}</span>`;
-        container.appendChild(chip);
-      });
-    }
+    // 3. Vector Geometry: Polygon Bisection (Sutherland-Hodgman)
+    function slicePolygon(poly, p1, p2) {
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const side = p => (p.x - p1.x) * dy - (p.y - p1.y) * dx;
 
-    // 3. Trace Reference Image Handling
-    document.getElementById('imageLoader').addEventListener('change', (e) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        refImage = new Image();
-        refImage.onload = render;
-        refImage.src = ev.target.result;
-      };
-      if (e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-    });
+      const leftPts = [];
+      const rightPts = [];
 
-    document.getElementById('opacitySlider').addEventListener('input', (e) => {
-      imageOpacity = e.target.value / 100;
-      document.getElementById('opacityVal').innerText = e.target.value + '%';
-      render();
-    });
+      for (let i = 0; i < poly.length; i++) {
+        const cur = poly[i];
+        const next = poly[(i + 1) % poly.length];
+        const sCur = side(cur);
+        const sNext = side(next);
 
-    document.getElementById('mirrorToggle').addEventListener('change', (e) => {
-      isMirrored = e.target.checked;
-      render();
-    });
+        if (sCur >= 0) leftPts.push(cur);
+        if (sCur <= 0) rightPts.push(cur);
 
-    // 4. Drawing Straight Seam Lines
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      if (!startPoint) {
-        startPoint = { x, y };
-      } else {
-        lines.push({ p1: startPoint, p2: { x, y } });
-        startPoint = null;
-        updatePieceTable();
+        if ((sCur > 1e-5 && sNext < -1e-5) || (sCur < -1e-5 && sNext > 1e-5)) {
+          const t = sCur / (sCur - sNext);
+          const ip = { x: cur.x + t * (next.x - cur.x), y: cur.y + t * (next.y - cur.y) };
+          leftPts.push(ip);
+          rightPts.push(ip);
+        }
       }
-      render();
-    });
 
-    canvas.addEventListener('mousemove', (e) => {
-      if (!startPoint) return;
-      render();
-      const rect = canvas.getBoundingClientRect();
-      ctx.beginPath();
-      ctx.setLineDash([4, 4]);
-      ctx.strokeStyle = '#e74c3c';
-      ctx.lineWidth = 1.5;
-      ctx.moveTo(startPoint.x, startPoint.y);
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
+      const cleanL = cleanPoly(leftPts);
+      const cleanR = cleanPoly(rightPts);
 
-    function undoLastLine() {
-      lines.pop();
-      updatePieceTable();
-      render();
+      if (cleanL.length >= 3 && cleanR.length >= 3 && getArea(cleanL) > 40 && getArea(cleanR) > 40) {
+        return [cleanL, cleanR];
+      }
+      return null;
     }
 
-    function clearLines() {
-      if (confirm('Clear all seam lines?')) {
-        lines = [];
-        pieceAssignments = {};
-        updatePieceTable();
+    function cleanPoly(pts) {
+      const res = [];
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i];
+        const next = pts[(i + 1) % pts.length];
+        if (Math.hypot(p.x - next.x, p.y - next.y) > 1e-3) {
+          res.push(p);
+        }
+      }
+      return res;
+    }
+
+    function getArea(pts) {
+      let area = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const j = (i + 1) % pts.length;
+        area += (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
+      }
+      return Math.abs(area / 2);
+    }
+
+    function getCentroid(pts) {
+      let cx = 0, cy = 0, area = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const j = (i + 1) % pts.length;
+        const factor = (pts[i].x * pts[j].y - pts[j].x * pts[i].y);
+        cx += (pts[i].x + pts[j].x) * factor;
+        cy += (pts[i].y + pts[j].y) * factor;
+        area += factor;
+      }
+      area = area / 2;
+      if (Math.abs(area) < 1e-5) return pts[0];
+      return { x: cx / (6 * area), y: cy / (6 * area) };
+    }
+
+    function pointInPolygon(pt, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i].x, yi = poly[i].y;
+        const xj = poly[j].x, yj = poly[j].y;
+        const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    // 4. Seam Allowance Outward Polygon Offsetting
+    function offsetPolygon(poly, offsetPx) {
+      // Ensure counter-clockwise winding
+      let area = 0;
+      for (let i = 0; i < poly.length; i++) {
+        const j = (i + 1) % poly.length;
+        area += (poly[i].x * poly[j].y - poly[j].x * poly[i].y);
+      }
+      const pts = (area < 0) ? [...poly].reverse() : [...poly];
+
+      const shiftedLines = [];
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i];
+        const b = pts[(i + 1) % pts.length];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy);
+        if (len < 1e-4) continue;
+        const nx = dy / len;
+        const ny = -dx / len;
+        shiftedLines.push({
+          p1: { x: a.x + nx * offsetPx, y: a.y + ny * offsetPx },
+          p2: { x: b.x + nx * offsetPx, y: b.y + ny * offsetPx },
+          dir: { x: dx, y: dy }
+        });
+      }
+
+      const offsetPts = [];
+      for (let i = 0; i < shiftedLines.length; i++) {
+        const l1 = shiftedLines[i];
+        const l2 = shiftedLines[(i + 1) % shiftedLines.length];
+        const denom = l1.dir.x * l2.dir.y - l1.dir.y * l2.dir.x;
+        if (Math.abs(denom) < 1e-5) {
+          offsetPts.push(l1.p2);
+          continue;
+        }
+        const t = ((l2.p1.x - l1.p1.x) * l2.dir.y - (l2.p1.y - l1.p1.y) * l2.dir.x) / denom;
+        offsetPts.push({ x: l1.p1.x + t * l1.dir.x, y: l1.p1.y + t * l1.dir.y });
+      }
+      return offsetPts;
+    }
+
+    // 5. Binary Cut Tree Traversal & Slicing
+    function getLeafNodes(node) {
+      if (!node.left && !node.right) return [node];
+      return [...getLeafNodes(node.left), ...getLeafNodes(node.right)];
+    }
+
+    function renumberLeaves(sec) {
+      const leaves = getLeafNodes(sectionTrees[sec]);
+      leaves.forEach((leaf, idx) => {
+        leaf.id = `${sec}${idx + 1}`;
+      });
+      updateSewingSequenceUI();
+    }
+
+    // Automated Reverse Assembly Sequence Formula Generator (e.g. (A1 > A2) = P)
+    function buildSewingSequenceString(node) {
+      if (!node.left && !node.right) return node.id;
+      return `(${buildSewingSequenceString(node.left)} > ${buildSewingSequenceString(node.right)})`;
+    }
+
+    function updateSewingSequenceUI() {
+      const str = buildSewingSequenceString(sectionTrees[activeSection]);
+      document.getElementById('sewingSequenceDisplay').innerText = `${str} = Section ${activeSection}`;
+    }
+
+    function attemptSlice(p1, p2) {
+      const leaves = getLeafNodes(sectionTrees[activeSection]);
+      let slicedAny = false;
+
+      leaves.forEach(leaf => {
+        const split = slicePolygon(leaf.polygon, p1, p2);
+        if (split) {
+          leaf.cutLine = { p1, p2 };
+          leaf.left = { id: '', polygon: split[0], left: null, right: null, fabric: leaf.fabric, cutLine: null };
+          leaf.right = { id: '', polygon: split[1], left: null, right: null, fabric: leaf.fabric, cutLine: null };
+          slicedAny = true;
+        }
+      });
+
+      if (slicedAny) {
+        renumberLeaves(activeSection);
         render();
       }
     }
 
-    // 5. Piece Table Mapping (A1, A2 -> Fabric Tag)
-    function updatePieceTable() {
-      const tbody = document.querySelector('#pieceTable tbody');
-      tbody.innerHTML = '';
+    function undoLastCut() {
+      function rollback(node) {
+        if (!node) return false;
+        if (node.left && !node.left.left && node.right && !node.right.left) {
+          node.left = null;
+          node.right = null;
+          node.cutLine = null;
+          return true;
+        }
+        return rollback(node.left) || rollback(node.right);
+      }
+      rollback(sectionTrees[activeSection]);
+      renumberLeaves(activeSection);
+      render();
+    }
 
-      lines.forEach((_, idx) => {
-        const pieceTag = `A${idx + 1}`;
-        const tr = document.createElement('tr');
+    function resetCurrentSection() {
+      if (confirm(`Reset all pieces in Section ${activeSection}?`)) {
+        initSectionTree(activeSection);
+        renumberLeaves(activeSection);
+        render();
+      }
+    }
 
-        const tdName = document.createElement('td');
-        tdName.innerText = pieceTag;
-
-        const tdSelect = document.createElement('td');
-        const sel = document.createElement('select');
-        sel.innerHTML = '<option value="">None (White)</option>';
-
-        projectPalette.forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.tag;
-          opt.innerText = `Fabric ${f.tag} (${f.name.substring(0, 18)}...)`;
-          if (pieceAssignments[pieceTag] === f.tag) opt.selected = true;
-          sel.appendChild(opt);
-        });
-
-        sel.onchange = (e) => {
-          pieceAssignments[pieceTag] = e.target.value;
+    // 6. Section Management
+    function renderSectionPills() {
+      const c = document.getElementById('sectionPills');
+      c.innerHTML = '';
+      sections.forEach(sec => {
+        const pill = document.createElement('div');
+        pill.className = `section-pill ${sec === activeSection ? 'active' : ''}`;
+        pill.innerText = `Section ${sec}`;
+        pill.onclick = () => {
+          activeSection = sec;
+          renderSectionPills();
+          updateSewingSequenceUI();
           render();
         };
-
-        tdSelect.appendChild(sel);
-        tr.appendChild(tdName);
-        tr.appendChild(tdSelect);
-        tbody.appendChild(tr);
+        c.appendChild(pill);
       });
     }
 
-    // 6. Canvas Render Cycle
+    function addSection() {
+      const nextChar = String.fromCharCode(65 + sections.length);
+      sections.push(nextChar);
+      initSectionTree(nextChar);
+      activeSection = nextChar;
+      renderSectionPills();
+      updateSewingSequenceUI();
+      render();
+    }
+
+    function setTool(tool) {
+      activeTool = tool;
+      document.getElementById('toolSlice').classList.toggle('active', tool === 'slice');
+      document.getElementById('toolPaint').classList.toggle('active', tool === 'paint');
+    }
+
+    // 7. Interactive Canvas Listeners
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = canvas.width - (e.clientX - rect.left); // mirrored X coordinate
+      const y = e.clientY - rect.top;
+
+      if (activeTool === 'slice') {
+        if (!cutStartPoint) {
+          cutStartPoint = { x, y };
+        } else {
+          attemptSlice(cutStartPoint, { x, y });
+          cutStartPoint = null;
+        }
+      } else if (activeTool === 'paint') {
+        if (!activeFabric) {
+          alert('Please select a fabric from the yardage catalog first.');
+          return;
+        }
+        const leaves = getLeafNodes(sectionTrees[activeSection]);
+        const hit = leaves.find(leaf => pointInPolygon({ x, y }, leaf.polygon));
+        if (hit) {
+          hit.fabric = activeFabric;
+          render();
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (activeTool !== 'slice' || !cutStartPoint) return;
+      render();
+      const rect = canvas.getBoundingClientRect();
+      const curX = canvas.width - (e.clientX - rect.left);
+      const curY = e.clientY - rect.top;
+
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 2;
+      ctx.moveTo(cutStartPoint.x, cutStartPoint.y);
+      ctx.lineTo(curX, curY);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // Reference Image
+    document.getElementById('traceInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        traceImg = new Image();
+        traceImg.onload = render;
+        traceImg.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('opacitySlider').addEventListener('input', e => {
+      traceOpacity = e.target.value / 100;
+      document.getElementById('opacityVal').innerText = e.target.value + '%';
+      render();
+    });
+
+    // 8. Main Canvas Render Cycle
     function render() {
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (isMirrored) {
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-      }
+      // Horizontal flip for FPP paper-side sewing
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
 
-      // Trace photo background
-      if (refImage) {
-        ctx.globalAlpha = imageOpacity;
-        ctx.drawImage(refImage, 0, 0, canvas.width, canvas.height);
+      if (traceImg) {
+        ctx.globalAlpha = traceOpacity;
+        ctx.drawImage(traceImg, 0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1.0;
       }
 
-      // Block boundary
-      ctx.strokeStyle = '#2e282a';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(0, 0, canvas.width, canvas.height);
+      sections.forEach(sec => {
+        const isActive = (sec === activeSection);
+        const leaves = getLeafNodes(sectionTrees[sec]);
 
-      // Seam Lines & Piece Labels
-      lines.forEach((line, index) => {
-        ctx.beginPath();
-        ctx.strokeStyle = '#2e282a';
-        ctx.lineWidth = 1.5;
-        ctx.moveTo(line.p1.x, line.p1.y);
-        ctx.lineTo(line.p2.x, line.p2.y);
-        ctx.stroke();
+        leaves.forEach(leaf => {
+          ctx.beginPath();
+          ctx.moveTo(leaf.polygon[0].x, leaf.polygon[0].y);
+          for (let i = 1; i < leaf.polygon.length; i++) {
+            ctx.lineTo(leaf.polygon[i].x, leaf.polygon[i].y);
+          }
+          ctx.closePath();
 
-        const midX = (line.p1.x + line.p2.x) / 2;
-        const midY = (line.p1.y + line.p2.y) / 2;
+          // Fabric Pattern Fill
+          if (leaf.fabric && leaf.fabric.imgObj) {
+            try {
+              const pat = ctx.createPattern(leaf.fabric.imgObj, 'repeat');
+              ctx.fillStyle = pat;
+              ctx.fill();
+            } catch (err) {
+              ctx.fillStyle = '#fce4ec';
+              ctx.fill();
+            }
+          } else {
+            ctx.fillStyle = isActive ? 'rgba(255,255,255,0.7)' : 'rgba(230,230,230,0.5)';
+            ctx.fill();
+          }
 
-        const pieceTag = `A${index + 1}`;
-        const fabricTag = pieceAssignments[pieceTag] ? ` [${pieceAssignments[pieceTag]}]` : '';
+          // Solid Sewing Lines
+          ctx.strokeStyle = isActive ? '#2e282a' : '#aaa';
+          ctx.lineWidth = isActive ? 2 : 1;
+          ctx.stroke();
 
-        ctx.fillStyle = '#9b6b78';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`${pieceTag}${fabricTag}`, midX + 4, midY - 4);
+          // Centroid Label
+          const c = getCentroid(leaf.polygon);
+          ctx.save();
+          // un-mirror text
+          ctx.translate(c.x, c.y);
+          ctx.scale(-1, 1);
+          ctx.fillStyle = '#2e282a';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const fabTag = leaf.fabric ? ` [${leaf.fabric.tag}]` : '';
+          ctx.fillText(`${leaf.id}${fabTag}`, 0, 0);
+          ctx.restore();
+        });
       });
 
-      if (startPoint) {
+      if (cutStartPoint && activeTool === 'slice') {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
-        ctx.arc(startPoint.x, startPoint.y, 4, 0, Math.PI * 2);
+        ctx.arc(cutStartPoint.x, cutStartPoint.y, 5, 0, Math.PI * 2);
         ctx.fill();
       }
 
       ctx.restore();
     }
 
-    // 7. Print Handler with Swatch Legend
+    // 9. Exploded Multi-Page Print Layout Engine (QuiltAssistant Format)
     function triggerPrint() {
-      const sa = document.getElementById('seamAllowance').value;
-      document.getElementById('printSA').innerText = sa;
+      const sa = parseFloat(document.getElementById('seamAllowance').value) || 0.25;
+      const saPx = sa * DPI;
+      const title = document.getElementById('patternTitle').value;
+      const dim = document.getElementById('blockDim').value;
 
-      const printImg = document.getElementById('printImage');
-      printImg.src = canvas.toDataURL('image/png');
-      printImg.style.width = (canvas.width / DPI) + 'in';
-      printImg.style.height = (canvas.height / DPI) + 'in';
+      document.getElementById('p1Title').innerText = title;
+      document.getElementById('p1Size').innerText = `${dim}" × ${dim}"`;
+      document.getElementById('p1SA').innerText = sa;
+      document.getElementById('p1Order').innerText = sections.map(s => `${buildSewingSequenceString(sectionTrees[s])} = ${s}`).join(' | ');
 
-      // Build Print Swatch Legend
-      const tbody = document.querySelector('#printLegendTable tbody');
-      tbody.innerHTML = '';
+      document.getElementById('p1OverviewImg').src = canvas.toDataURL('image/png');
 
+      // Populate Fabric Legend
+      const legendBody = document.querySelector('#p1Legend tbody');
+      legendBody.innerHTML = '';
       projectPalette.forEach(f => {
-        const usedPieces = Object.keys(pieceAssignments).filter(k => pieceAssignments[k] === f.tag);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>Fabric ${f.tag}</strong></td>
-          <td><img src="${f.imgUrl}" alt="${f.name}"/></td>
+        const usedPieces = [];
+        sections.forEach(s => {
+          getLeafNodes(sectionTrees[s]).forEach(l => {
+            if (l.fabric && l.fabric.name === f.name) usedPieces.push(l.id);
+          });
+        });
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>[${f.tag}]</strong></td>
+          <td><img src="${f.imgObj.src}" alt="${f.name}"/></td>
           <td>${f.name}</td>
-          <td>${usedPieces.length > 0 ? usedPieces.join(', ') : 'Unassigned'}</td>
+          <td>${usedPieces.length ? usedPieces.join(', ') : 'Unassigned'}</td>
         `;
-        tbody.appendChild(tr);
+        legendBody.appendChild(row);
+      });
+
+      // Generate Individual Exploded Section Pages
+      const pagesContainer = document.getElementById('sectionPagesContainer');
+      pagesContainer.innerHTML = '';
+
+      sections.forEach((sec, idx) => {
+        const leaves = getLeafNodes(sectionTrees[sec]);
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'print-page';
+
+        pageDiv.innerHTML = `
+          <div class="print-header">
+            <div class="calibration-box">1 INCH<br>CALIBRATION<br>SQUARE</div>
+            <h2>${title} — Section ${sec}</h2>
+            <p>Solid Line = <strong>Sewing Line</strong> | Dashed Line = <strong>Cutting Line (${sa}" Seam Allowance)</strong></p>
+            <p style="font-size:11px;">Assembly Order: <strong>${buildSewingSequenceString(sectionTrees[sec])}</strong></p>
+          </div>
+        `;
+
+        const secCanvas = document.createElement('canvas');
+        secCanvas.width = canvas.width + (saPx * 2);
+        secCanvas.height = canvas.height + (saPx * 2);
+        const sCtx = secCanvas.getContext('2d');
+
+        sCtx.save();
+        sCtx.translate(secCanvas.width - saPx, saPx);
+        sCtx.scale(-1, 1);
+
+        // A. Draw Outer Dashed Seam Allowance Cutting Line
+        sCtx.beginPath();
+        sCtx.setLineDash([6, 4]);
+        sCtx.strokeStyle = '#000';
+        sCtx.lineWidth = 1.5;
+        const offsetRoot = offsetPolygon(sectionTrees[sec].polygon, saPx);
+        sCtx.moveTo(offsetRoot[0].x, offsetRoot[0].y);
+        for (let i = 1; i < offsetRoot.length; i++) sCtx.lineTo(offsetRoot[i].x, offsetRoot[i].y);
+        sCtx.closePath();
+        sCtx.stroke();
+        sCtx.setLineDash([]);
+
+        // B. Draw Solid Sewing Lines & Pieces
+        leaves.forEach(leaf => {
+          sCtx.beginPath();
+          sCtx.moveTo(leaf.polygon[0].x, leaf.polygon[0].y);
+          for (let i = 1; i < leaf.polygon.length; i++) sCtx.lineTo(leaf.polygon[i].x, leaf.polygon[i].y);
+          sCtx.closePath();
+          sCtx.strokeStyle = '#000';
+          sCtx.lineWidth = 1.5;
+          sCtx.stroke();
+
+          // Centroid Piece Tag
+          const c = getCentroid(leaf.polygon);
+          sCtx.save();
+          sCtx.translate(c.x, c.y);
+          sCtx.scale(-1, 1);
+          sCtx.fillStyle = '#000';
+          sCtx.font = 'bold 15px sans-serif';
+          sCtx.textAlign = 'center';
+          sCtx.textBaseline = 'middle';
+          sCtx.fillText(leaf.id, 0, 0);
+          sCtx.restore();
+        });
+
+        // C. Glue Edge Notation
+        sCtx.fillStyle = '#000';
+        sCtx.font = 'bold 11px sans-serif';
+        sCtx.fillText(`Glue Edge #${idx + 1} (Align with Section ${sec})`, 10, -6);
+
+        sCtx.restore();
+
+        const img = document.createElement('img');
+        img.src = secCanvas.toDataURL('image/png');
+        img.style.width = (secCanvas.width / DPI) + 'in';
+        img.style.height = (secCanvas.height / DPI) + 'in';
+        img.style.display = 'block';
+        img.style.margin = '20px auto';
+
+        pageDiv.appendChild(img);
+        pagesContainer.appendChild(pageDiv);
       });
 
       window.print();
     }
 
-    // Start App & Fetch Store Collection
-    fetchYardage();
+    // Startup
+    loadYardage();
+    renderSectionPills();
+    updateSewingSequenceUI();
     render();
   </script>
 </body>
