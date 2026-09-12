@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joy in the Seam | FPP Pattern Creator</title>
+  <style>
+    :root {
+      --primary: #9b6b78;
+      --primary-hover: #825763;
+      --bg-cream: #faf7f5;
+      --dark: #2e282a;
+      --border: #ddd2cc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header */
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    /* Workspace layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar controls */
+    aside {
+      width: 320px;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+    }
+
+    .panel-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .panel-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #555;
+    }
+
+    input[type="file"], input[type="number"], input[type="range"] {
+      width: 100%;
+    }
+
+    input[type="number"] {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #eef0f2;
+      color: #333;
+    }
+    .btn-secondary:hover {
+      background: #dde1e5;
+    }
+
+    /* Main canvas stage */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      background: #ede8e4;
+      position: relative;
+    }
+
+    .canvas-card {
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      position: relative;
+      display: inline-block;
+    }
+
+    canvas {
+      cursor: crosshair;
+      display: block;
+    }
+
+    /* Print Template view (hidden by default on screen) */
+    #print-section {
+      display: none;
+    }
+
+    /* PRINT RULES FOR 1:1 SCALE */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      #print-section, #print-section * {
+        visibility: visible;
+      }
+
+      #print-section {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0.5in;
+      }
+
+      .print-header {
+        margin-bottom: 20px;
+      }
+
+      .calibration-box {
+        width: 1in;
+        height: 1in;
+        border: 2px solid #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 10px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .print-canvas {
+        border: 1px solid #999;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Joy in the Seam — FPP Designer</h1>
+    <div>
+      <button class="btn" onclick="triggerPrint()">🖨️ Print Pattern to Scale</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside>
+      <div class="panel-group">
+        <label>1. Reference Photo (Optional)</label>
+        <input type="file" id="imageLoader" accept="image/*" />
+      </div>
+
+      <div class="panel-group">
+        <label>Image Opacity (<span id="opacityVal">40%</span>)</label>
+        <input type="range" id="opacitySlider" min="0" max="100" value="40" />
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border);" />
+
+      <div class="panel-group">
+        <label>Seam Allowance (Inches)</label>
+        <input type="number" id="seamAllowance" value="0.25" step="0.125" min="0" max="1" />
+      </div>
+
+      <div class="panel-group">
+        <label>
+          <input type="checkbox" id="mirrorToggle" /> Mirror Template (Sewing side)
+        </label>
+        <small style="color:#666;">FPP patterns are traditionally sewn on the reverse side.</small>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border);" />
+
+      <div class="panel-group">
+        <label>Drawing Tools</label>
+        <button class="btn btn-secondary" onclick="undoLastLine()">↩ Undo Last Seam</button>
+        <button class="btn btn-secondary" onclick="clearLines()">🗑️ Clear Seams</button>
+      </div>
+
+      <div style="margin-top: auto; font-size: 0.8rem; color: #777;">
+        <strong>Instructions:</strong><br>
+        1. Click two points on the canvas to draw straight seam lines.<br>
+        2. Divide the block into convex shapes.<br>
+        3. Print to test scale with your printer.
+      </div>
+    </aside>
+
+    <main>
+      <div class="canvas-card">
+        <!-- 6in x 6in block at 96 DPI = 576px -->
+        <canvas id="designCanvas" width="576" height="576"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <!-- Print Container -->
+  <div id="print-section">
+    <div class="print-header">
+      <h2>Joy in the Seam — Foundation Paper Piecing Template</h2>
+      <p>Block Size: 6" x 6" | Seam Allowance: <span id="printSA">0.25</span>"</p>
+    </div>
+
+    <div class="calibration-box">
+      1 INCH<br>TEST SQUARE<br>(Measure with ruler)
+    </div>
+
+    <img id="printImage" class="print-canvas" alt="Printable FPP Pattern" />
+  </div>
+
+  <script>
+    const canvas = document.getElementById('designCanvas');
+    const ctx = canvas.getContext('2d');
+    const DPI = 96; // Standard screen DPI (96px = 1 inch)
+
+    let refImage = null;
+    let imageOpacity = 0.4;
+    let lines = [];
+    let startPoint = null;
+    let isMirrored = false;
+
+    // Load reference photo
+    document.getElementById('imageLoader').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        refImage = new Image();
+        refImage.onload = render;
+        refImage.src = event.target.result;
+      };
+      if (e.target.files[0]) {
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    // Handle Opacity
+    document.getElementById('opacitySlider').addEventListener('input', function(e) {
+      imageOpacity = e.target.value / 100;
+      document.getElementById('opacityVal').innerText = e.target.value + '%';
+      render();
+    });
+
+    // Handle Mirror
+    document.getElementById('mirrorToggle').addEventListener('change', function(e) {
+      isMirrored = e.target.checked;
+      render();
+    });
+
+    // Line drawing interactions
+    canvas.addEventListener('click', function(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (!startPoint) {
+        startPoint = { x, y };
+      } else {
+        lines.push({ p1: startPoint, p2: { x, y } });
+        startPoint = null;
+      }
+      render();
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      if (!startPoint) return;
+      render();
+      const rect = canvas.getBoundingClientRect();
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+
+      // Draw active preview line
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 1.5;
+      ctx.moveTo(startPoint.x, startPoint.y);
+      ctx.lineTo(currentX, currentY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    function undoLastLine() {
+      lines.pop();
+      render();
+    }
+
+    function clearLines() {
+      if (confirm('Clear all seam lines?')) {
+        lines = [];
+        render();
+      }
+    }
+
+    function render() {
+      ctx.save();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (isMirrored) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      // 1. Draw Reference Image (if present)
+      if (refImage) {
+        ctx.globalAlpha = imageOpacity;
+        ctx.drawImage(refImage, 0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 2. Draw Outer Border (Solid Sewing Line)
+      ctx.strokeStyle = '#2e282a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+      // 3. Draw Seam Lines
+      lines.forEach((line, index) => {
+        ctx.beginPath();
+        ctx.strokeStyle = '#2e282a';
+        ctx.lineWidth = 1.5;
+        ctx.moveTo(line.p1.x, line.p1.y);
+        ctx.lineTo(line.p2.x, line.p2.y);
+        ctx.stroke();
+
+        // Piece Sequence Number at line center
+        const midX = (line.p1.x + line.p2.x) / 2;
+        const midY = (line.p1.y + line.p2.y) / 2;
+        ctx.fillStyle = '#9b6b78';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(`A${index + 1}`, midX + 4, midY - 4);
+      });
+
+      // 4. Highlight starting click if in progress
+      if (startPoint) {
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(startPoint.x, startPoint.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function triggerPrint() {
+      const sa = document.getElementById('seamAllowance').value;
+      document.getElementById('printSA').innerText = sa;
+
+      // Export canvas to high-res print target
+      const printImg = document.getElementById('printImage');
+      printImg.src = canvas.toDataURL('image/png');
+      printImg.style.width = (canvas.width / DPI) + 'in';
+      printImg.style.height = (canvas.height / DPI) + 'in';
+
+      window.print();
+    }
+
+    render();
+  </script>
+</body>
+</html>
